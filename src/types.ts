@@ -1,6 +1,7 @@
 export type Status = 'todo' | 'doing' | 'done';
 
 export interface Task {
+  user_id: string;
   id: string;
   title: string;
   description: string | null;
