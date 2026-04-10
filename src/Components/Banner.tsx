@@ -1,6 +1,6 @@
 import { EllipsisVertical } from 'lucide-react';
 
-export function Banner() {
+export default function Banner() {
   return (
     <header className="flex flex-row items-center justify-between bg-card-dark w-full px-6 py-6">
       <div className="text-2xl font-medium">Platform Launch</div>
