@@ -18,3 +18,12 @@ body {
 #root {
   @apply w-full h-full;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3e3f4e;
+  border-radius: 10px;
+}
