@@ -3,10 +3,10 @@ import { Navbar } from './Components/Navbar';
 
 function App() {
   return (
-    <>
-      <Banner />
+    <main className="grid grid-cols-5 grid-rows-10 w-full h-full">
       <Navbar />
-    </>
+      <Banner />
+    </main>
   );
 }
 

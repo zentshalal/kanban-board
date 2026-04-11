@@ -14,3 +14,7 @@
 body {
   @apply font-jakarta bg-main-dark text-primary-text h-screen w-full;
 }
+
+#root {
+  @apply w-full h-full;
+}
