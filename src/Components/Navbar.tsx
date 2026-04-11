@@ -24,7 +24,7 @@ export function Navbar() {
         </div>
         <div className="pt-4">
           <span className="text-secondary-text font-bold text-xs tracking-[0.2rem] px-8">
-            ALL BOARDS (1)
+            ALL BOARDS ({boards.length})
           </span>
           <div className="flex flex-col py-6 pr-6 gap-y-2">
             {boards.map((board) => (
