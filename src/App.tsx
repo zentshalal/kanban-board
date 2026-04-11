@@ -1,6 +1,7 @@
 import { Banner } from './Components/Banner';
 import { Navbar } from './Components/Navbar';
 import { BoardContent } from './Components/BoardContent';
+import { NewTask } from './Components/NewTask';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Navbar />
       <Banner />
       <BoardContent />
+      <NewTask />
     </main>
   );
 }

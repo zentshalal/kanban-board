@@ -9,4 +9,5 @@ export interface Task {
   status: Status;
   position: number;
   column: number;
+  expires_at: string;
 }
