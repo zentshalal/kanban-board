@@ -19,11 +19,20 @@ body {
   @apply w-full h-full;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
+.custom-scrollbar-y::-webkit-scrollbar {
   width: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
+.custom-scrollbar-y::-webkit-scrollbar-thumb {
+  background-color: #3e3f4e;
+  border-radius: 10px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar {
+  height: 6px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-thumb {
   background-color: #3e3f4e;
   border-radius: 10px;
 }

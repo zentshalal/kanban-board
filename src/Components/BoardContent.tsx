@@ -2,7 +2,7 @@ import { Column } from './Column';
 
 export function BoardContent() {
   return (
-    <div className="grid grid-cols-4 gap-x-6 py-6 px-6 col-span-4 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden">
+    <div className="flex flex-row gap-x-6 py-6 px-6 col-span-4 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x">
       {/* TODO COLUMN */}
       <Column
         name="TODO"
@@ -68,8 +68,22 @@ export function BoardContent() {
           { id: 17, title: 'Research the market', end_date: 'Never' },
         ]}
       />
+      {/* TEST */}
+      <Column
+        name="TODO"
+        tasks={[
+          { id: 1, title: 'Build UI for onboarding flow', end_date: 'Never' },
+          { id: 2, title: 'Build UI for search', end_date: 'Never' },
+          { id: 3, title: 'Build Settings UI', end_date: 'Never' },
+          {
+            id: 4,
+            title: 'QA and test all major user journeys',
+            end_date: 'Never',
+          },
+        ]}
+      />
       {/* NEW COLUMN */}
-      <button className="bg-card-dark rounded-xl text-secondary-text font-bold cursor-pointer hover:bg-card-dark/60 transition-colors w-full h-full">
+      <button className="bg-card-dark rounded-xl text-secondary-text font-bold cursor-pointer hover:bg-card-dark/60 transition-colors w-80 shrink-0 h-full">
         <p className="text-2xl">+ New Column</p>
       </button>
     </div>

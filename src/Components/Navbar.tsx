@@ -45,7 +45,7 @@ export function Navbar() {
         </div>
       </div>
       <div className="flex flex-col gap-y-4 mx-auto py-6">
-        <div className="flex flex-row gap-x-6 items-center justify-center bg-main-dark mx-auto py-3 px-20 rounded-xl text-secondary-text">
+        <div className="flex flex-row gap-x-6 items-center justify-center bg-main-dark py-3 px-4 rounded-xl text-secondary-text">
           <Sun />
           <button
             onClick={() => setIsDark(!isDark)}
@@ -59,7 +59,7 @@ export function Navbar() {
           </button>
           <Moon />
         </div>
-        <button className="flex flex-row gap-x-4 py-2 px-2 text-secondary-text text-sm font-bold cursor-pointer hover:bg-main-dark/30 transition-colors rounded-xl w-1/2">
+        <button className="flex flex-row gap-x-4 py-2 px-2 text-secondary-text text-sm font-bold cursor-pointer hover:bg-main-dark/30 transition-colors rounded-xl">
           <EyeOff />
           <span>Hide Sidebar</span>
         </button>
