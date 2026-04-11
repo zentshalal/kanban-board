@@ -2,7 +2,7 @@ import { Column } from './Column';
 
 export function BoardContent() {
   return (
-    <div className="flex flex-row gap-x-6 py-6 px-6 col-span-4 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x">
+    <div className="flex flex-row gap-x-6 py-6 px-6 col-span-3 md:col-span-4 row-span-8 sm:row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x">
       {/* TODO COLUMN */}
       <Column
         name="TODO"

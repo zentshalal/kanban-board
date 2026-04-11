@@ -12,7 +12,7 @@ export function Navbar() {
   const [isDark, setIsDark] = useState<boolean>(false);
 
   return (
-    <nav className="flex flex-col justify-between bg-card-dark h-full col-span-1 row-span-10 border-r border-secondary-text/20">
+    <nav className="flex flex-col justify-between bg-card-dark h-full col-span-2 md:col-span-1 row-span-10 border-r border-secondary-text/20">
       <div>
         <div className="flex flex-row gap-x-4 items-center py-6 px-8">
           <div className="flex flex-row gap-x-1 justify-center">
@@ -23,7 +23,7 @@ export function Navbar() {
           <span className="text-4xl font-bold">kanban</span>
         </div>
         <div className="pt-4">
-          <span className="text-secondary-text font-bold text-xs tracking-[0.2rem] px-8">
+          <span className="text-secondary-text font-bold text-xs tracking-[0.2rem] pl-8">
             ALL BOARDS ({boards.length})
           </span>
           <div className="flex flex-col py-6 pr-6 gap-y-2">
