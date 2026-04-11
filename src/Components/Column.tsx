@@ -1,7 +1,7 @@
 import { TaskCard } from './TaskCard';
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   end_date: string;
 }

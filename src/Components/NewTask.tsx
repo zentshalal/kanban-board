@@ -1,7 +1,5 @@
-import { useState } from 'react';
-
 export function NewTask() {
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const isVisible = true;
 
   return (
     <>

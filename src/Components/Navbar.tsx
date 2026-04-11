@@ -3,11 +3,8 @@ import { PanelsTopLeft, Moon, Sun, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 export function Navbar() {
-  const [boards, setBoards] = useState<string[]>([
-    'Platform Launch',
-    'Marketing Plan',
-    'Roadmap',
-  ]);
+  const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
+
   const [boardSelected, setBoardSelected] = useState<number>(0);
   const [isDark, setIsDark] = useState<boolean>(false);
 

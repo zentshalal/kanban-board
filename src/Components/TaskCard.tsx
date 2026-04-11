@@ -1,6 +1,12 @@
 import { FlagTriangleRight } from 'lucide-react';
 
-export function TaskCard({ id, title, endDate }) {
+interface Task {
+  id: string;
+  title: string;
+  endDate: string;
+}
+
+export function TaskCard({ id, title, endDate }: Task) {
   return (
     <div
       id={id}
