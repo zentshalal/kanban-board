@@ -69,6 +69,9 @@ export function BoardContent() {
         ]}
       />
       {/* NEW COLUMN */}
+      <button className="bg-card-dark rounded-xl text-secondary-text font-bold cursor-pointer hover:bg-card-dark/60 transition-colors w-full h-full">
+        <p className="text-2xl">+ New Column</p>
+      </button>
     </div>
   );
 }
