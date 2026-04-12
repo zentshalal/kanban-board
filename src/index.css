@@ -3,6 +3,7 @@
 
 @theme {
   --color-main-dark: #20212c;
+  --color-main-white: #e8e8e8;
   --color-card-dark: #2b2c37;
   --color-action: #635fc7;
   --color-primary-text: #ffffff;
@@ -10,6 +11,8 @@
 
   --font-jakarta: 'Plus Jakarta Sans', sans-serif;
 }
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 body {
   @apply font-jakarta bg-main-dark text-primary-text h-screen w-full;
@@ -24,8 +27,7 @@ body {
 }
 
 .custom-scrollbar-y::-webkit-scrollbar-thumb {
-  background-color: #3e3f4e;
-  border-radius: 10px;
+  @apply dark:bg-[#3e3f4e] bg-action rounded-[10px];
 }
 
 .custom-scrollbar-x::-webkit-scrollbar {
@@ -33,8 +35,7 @@ body {
 }
 
 .custom-scrollbar-x::-webkit-scrollbar-thumb {
-  background-color: #3e3f4e;
-  border-radius: 10px;
+  @apply dark:bg-[#3e3f4e] rounded-[10px];
 }
 
 @media screen and (max-width: 1280px) {

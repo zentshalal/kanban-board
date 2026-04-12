@@ -18,7 +18,7 @@ export function Column({ name, tasks }: Column) {
         <div
           className={`w-3 h-3 rounded-full ${name === 'DONE' ? 'bg-lime-500' : name === 'DOING' ? 'bg-purple-600' : 'bg-cyan-500'}`}
         ></div>
-        <span className="font-bold tracking-widest text-secondary-text text-xs">
+        <span className="font-bold tracking-widest dark:text-secondary-text text-card-dark/60 text-xs">
           {name} ({tasks.length})
         </span>
       </div>

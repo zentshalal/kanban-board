@@ -2,7 +2,7 @@ import { Column } from './Column';
 
 export function BoardContent() {
   return (
-    <div className="flex flex-row gap-x-6 pt-6 pb-2 px-6 col-span-3 md:col-span-4 row-span-8 sm:row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x">
+    <div className="flex flex-row gap-x-6 pt-6 pb-2 px-6 col-span-3 md:col-span-4 row-span-8 sm:row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x dark:bg-main-dark bg-white">
       {/* TODO COLUMN */}
       <Column
         name="TODO"
@@ -69,8 +69,10 @@ export function BoardContent() {
         ]}
       />
       {/* NEW COLUMN */}
-      <button className="bg-card-dark rounded-xl text-secondary-text font-bold cursor-pointer hover:bg-card-dark/60 transition-colors w-80 shrink-0 h-full">
-        <p className="text-2xl">+ New Column</p>
+      <button className="dark:bg-card-dark bg-main-white rounded-xl font-bold cursor-pointer hover:dark:bg-card-dark/60 hover:bg-main-dark/20 transition-colors w-80 shrink-0 h-full">
+        <p className="text-2xl dark:text-primary-text text-card-dark/60">
+          + New Column
+        </p>
       </button>
     </div>
   );

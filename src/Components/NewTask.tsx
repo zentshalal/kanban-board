@@ -31,14 +31,14 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
         <div className="fixed inset-0 backdrop-brightness-50 flex items-center justify-center z-50 p-4">
           <form
             ref={containerRef}
-            className="bg-card-dark rounded-lg p-8 w-full max-w-md shadow-2xl"
+            className="dark:bg-card-dark bg-main-white rounded-lg p-8 w-full max-w-md shadow-2xl"
           >
             <div className="flex flex-row items-start justify-between">
-              <h2 className="text-lg font-bold mb-4 text-white">
+              <h2 className="text-lg font-bold mb-4 dark:text-primary-text text-card-dark/60">
                 Add New Task
               </h2>
               <button
-                className="rounded-full hover:bg-action p-1 cursor-pointer transition-colors"
+                className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
                 onClick={onClose}
               >
                 <X />
@@ -47,32 +47,36 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
 
             <div className="gap-y-6 flex flex-col w-full">
               <label className="flex flex-col gap-y-2">
-                <span className="font-bold tracking-wider text-sm">Title</span>
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Title
+                </span>
                 <input
                   type="text"
                   placeholder="e.g. Take a coffee break"
-                  className="outline-none border-2 border-secondary-text/40 rounded-lg px-2 py-2 placeholder:text-secondary-text/40 text-sm"
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
                 />
               </label>
 
               <label className="flex flex-col gap-y-2">
-                <span className="font-bold tracking-wider text-sm">
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
                   Description
                 </span>
                 <textarea
                   placeholder="e.g. It's always good to take a break. This 15 minutes break will recharge the batteries a little."
-                  className="outline-none border-2 border-secondary-text/40 rounded-lg px-2 py-2 placeholder:text-secondary-text/40 text-sm resize-none"
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm resize-none"
                   rows={5}
                 ></textarea>
               </label>
 
               <label className="flex flex-col gap-y-2 w-full">
-                <span className="font-bold tracking-wider text-sm">Status</span>
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Status
+                </span>
                 <div className="w-full relative">
                   <select
                     name="status"
                     id="status"
-                    className="outline-none border-2 appearance-none border-secondary-text/40 rounded-md p-2 text-sm font-semibold bg-card-dark w-full "
+                    className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
                   >
                     <option value="todo">Todo</option>
                     <option value="doing">Doing</option>
@@ -82,7 +86,7 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
                     <ChevronDown
                       size={16}
                       strokeWidth={3}
-                      className="text-action"
+                      className="dark:text-action text-action/40"
                     />
                   </div>
                 </div>
