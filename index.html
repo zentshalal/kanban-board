@@ -7,6 +7,19 @@
     <link rel="icon" type="image/x-icon" href="/public/icon.png" />
 
     <title>kanban</title>
+
+    <script>
+      // Loads first the theme so the user doesn't have a white flash when his theme is the black one
+      if (
+        localStorage.theme === 'dark' ||
+        (!(theme in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', '');
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

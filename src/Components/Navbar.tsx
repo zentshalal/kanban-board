@@ -2,9 +2,13 @@ import { PanelsTopLeft, Moon, Sun, EyeOff } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
 
-export function Navbar() {
-  const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
+interface NavbarProps {
+  setNavbarHidden: () => void;
+  className?: string;
+}
 
+export function Navbar({ setNavbarHidden, className }: NavbarProps) {
+  const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
   const [boardSelected, setBoardSelected] = useState<number>(0);
 
   // Defines the user's theme reading localStorage or accessing his theme preferences
@@ -25,15 +29,19 @@ export function Navbar() {
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.theme = 'dark';
     } else {
       document.documentElement.setAttribute('data-theme', '');
+      localStorage.theme = 'light';
     }
   }, [theme]);
 
   console.log();
 
   return (
-    <nav className="flex flex-col justify-between dark:bg-card-dark bg-main-white h-full col-span-2 md:col-span-1 row-span-10 border-r border-secondary-text/20">
+    <nav
+      className={`flex flex-col justify-between dark:bg-card-dark bg-main-white h-full row-span-10 border-r border-secondary-text/20 col-span-2 md:col-span-1 ${className}`}
+    >
       <div>
         <div className="flex flex-row gap-x-4 items-center py-6 px-8">
           <div className="flex flex-row gap-x-1 justify-center">
@@ -84,7 +92,10 @@ export function Navbar() {
           </button>
           <Moon />
         </div>
-        <button className="flex flex-row gap-x-4 py-2 px-2 dark:text-secondary-text text-card-dark/60 text-sm font-bold cursor-pointer hover:dark:bg-main-dark/30 hover:bg-main-dark/10 transition-colors rounded-xl">
+        <button
+          onClick={setNavbarHidden}
+          className="flex flex-row gap-x-4 py-2 px-2 dark:text-secondary-text text-card-dark/60 text-sm font-bold cursor-pointer hover:dark:bg-main-dark/30 hover:bg-main-dark/10 transition-colors rounded-xl"
+        >
           <EyeOff />
           <span>Hide Sidebar</span>
         </button>
