@@ -1,13 +1,14 @@
 import { Column } from './Column';
 
 interface BoardContentProps {
-  className?: string;
+  isNavbarHidden: boolean;
+  isMobile: boolean;
 }
 
-export function BoardContent({ className }: BoardContentProps) {
+export function BoardContent({ isNavbarHidden, isMobile }: BoardContentProps) {
   return (
     <div
-      className={`${className ? className : 'col-span-4 sm:col-span-3 md:col-span-4'} flex flex-row gap-x-6 pt-6 pb-2 px-6 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x dark:bg-main-dark bg-white`}
+      className={`${isNavbarHidden ? 'sm:col-span-5 md:col-span-6' : ''} ${isMobile && !isNavbarHidden ? 'col-span-1 -z-1 hidden' : ''} col-span-4 sm:col-span-3 md:col-span-4 flex flex-row gap-x-6 pt-6 pb-2 px-6 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x dark:bg-main-dark bg-white`}
     >
       {/* TODO COLUMN */}
       <Column

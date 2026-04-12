@@ -4,9 +4,15 @@ import { useState, useEffect } from 'react';
 
 interface NavbarProps {
   setNavbarHidden: () => void;
+  isNavbarHidden: boolean;
+  isMobile: boolean;
 }
 
-export function Navbar({ setNavbarHidden }: NavbarProps) {
+export function Navbar({
+  setNavbarHidden,
+  isNavbarHidden,
+  isMobile,
+}: NavbarProps) {
   const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
   const [boardSelected, setBoardSelected] = useState<number>(0);
 
@@ -35,10 +41,10 @@ export function Navbar({ setNavbarHidden }: NavbarProps) {
     }
   }, [theme]);
 
-  console.log();
-
   return (
-    <nav className="sm:flex flex-col justify-between dark:bg-card-dark bg-main-white h-full row-span-10 border-r border-secondary-text/20 hidden sm:col-span-2 md:col-span-1">
+    <nav
+      className={`${isNavbarHidden ? 'hidden' : 'sm:flex'} ${isMobile && !isNavbarHidden ? 'col-span-4 flex' : ''}hidden row-span-10 sm:col-span-2 flex-col justify-between dark:bg-card-dark bg-main-white h-full border-r border-secondary-text/20`}
+    >
       <div>
         <div className="flex flex-row gap-x-4 items-center py-6 px-8">
           <div className="flex flex-row gap-x-1 justify-center">
@@ -73,7 +79,7 @@ export function Navbar({ setNavbarHidden }: NavbarProps) {
         </div>
       </div>
       <div className="flex flex-col gap-y-4 mx-auto py-6">
-        <div className="flex flex-row gap-x-6 items-center justify-center dark:bg-main-dark bg-action py-3 px-4 rounded-xl text-primary-text dark:text-secondary-text">
+        <div className="flex flex-row gap-x-6 items-center justify-center mx-auto dark:bg-main-dark bg-action py-3 px-4 rounded-xl text-primary-text dark:text-secondary-text">
           <Sun />
           <button
             onClick={() =>
@@ -91,7 +97,7 @@ export function Navbar({ setNavbarHidden }: NavbarProps) {
         </div>
         <button
           onClick={setNavbarHidden}
-          className="flex flex-row gap-x-4 py-2 px-2 dark:text-secondary-text text-card-dark/60 text-sm font-bold cursor-pointer hover:dark:bg-main-dark/30 hover:bg-main-dark/10 transition-colors rounded-xl"
+          className="flex flex-row gap-x-4 py-2 px-2 mx-auto dark:text-secondary-text text-card-dark/60 text-sm font-bold cursor-pointer hover:dark:bg-main-dark/30 hover:bg-main-dark/10 transition-colors rounded-xl"
         >
           <EyeOff />
           <span>Hide Sidebar</span>

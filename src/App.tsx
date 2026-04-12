@@ -5,36 +5,57 @@ import { NewTask } from './Components/NewTask';
 
 import { Eye } from 'lucide-react';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Checks if the user is on mobile
+function useWindowSize() {
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 640);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 640);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+}
 
 function App() {
+  const isMobile = useWindowSize();
+
   const [isNewTaskVisible, setIsNewTaskVisible] = useState<boolean>(false);
-  const [isNavbarHidden, setIsNavbarHidden] = useState<boolean>(false);
-
-  // Sets className for col-span property when navbar is hidden
-  const [bannerClass, setBannerClass] = useState<string>('');
-  const [boardContentClass, setBoardContentClass] = useState<string>('');
-
-  // Handles the visibility of the navbar
-  function handleNavbar() {
-    if (!isNavbarHidden) {
-      setIsNavbarHidden((prev) => !prev);
-      setBannerClass('col-span-4 sm:col-span-5');
-      setBoardContentClass('col-span-4 sm:col-span-5');
-    } else {
-      setIsNavbarHidden((prev) => !prev);
-      setBannerClass('');
-      setBoardContentClass('');
-    }
-  }
+  // If the user is on mobile the navbar is naturally hidden
+  const [isNavbarHidden, setIsNavbarHidden] = useState<boolean>(
+    isMobile ? true : false
+  );
 
   return (
-    <main className="grid grid-cols-4 sm:grid-cols-5 grid-rows-10 w-screen h-screen">
-      {!isNavbarHidden && <Navbar setNavbarHidden={() => handleNavbar()} />}
-      {isNavbarHidden && (
+    <main className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 grid-rows-10 w-screen h-screen">
+      <Navbar
+        isMobile={isMobile}
+        setNavbarHidden={() => setIsNavbarHidden((prev) => !prev)}
+        isNavbarHidden={isNavbarHidden}
+      />
+      {/* Button version not on mobile */}
+      {isNavbarHidden && !isMobile && (
         <>
           <button
-            onClick={handleNavbar}
+            onClick={() => setIsNavbarHidden((prev) => !prev)}
+            className="fixed outline-none p-3 bg-action rounded-full m-4 bottom-0 cursor-pointer hover:bg-action/80 transition-colors"
+          >
+            <Eye />
+          </button>
+        </>
+      )}
+      {/* Button version on mobile */}
+      {isMobile && isNavbarHidden && (
+        <>
+          <button
+            onClick={() => {
+              setIsNavbarHidden((prev) => !prev);
+            }}
             className="fixed outline-none p-3 bg-action rounded-full m-4 bottom-0 cursor-pointer hover:bg-action/80 transition-colors"
           >
             <Eye />
@@ -42,10 +63,11 @@ function App() {
         </>
       )}
       <Banner
+        isMobile={isMobile}
         addNewTask={() => setIsNewTaskVisible((prev) => !prev)}
-        className={bannerClass}
+        isNavbarHidden={isNavbarHidden}
       />
-      <BoardContent className={boardContentClass} />
+      <BoardContent isNavbarHidden={isNavbarHidden} isMobile={isMobile} />
       <NewTask
         isVisible={isNewTaskVisible}
         onClose={() => setIsNewTaskVisible(false)}
