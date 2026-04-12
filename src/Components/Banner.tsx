@@ -1,6 +1,10 @@
 import { EllipsisVertical } from 'lucide-react';
 
-export function Banner({ addNewTask }) {
+interface BannerProps {
+  addNewTask: () => void;
+}
+
+export function Banner({ addNewTask }: BannerProps) {
   return (
     <header className="flex flex-row items-center justify-center sm:justify-between dark:bg-card-dark bg-main-white w-full px-6 py-6 col-span-3 md:col-span-4 row-span-2 sm:row-span-1 flex-wrap border-b border-secondary-text/20">
       <div className="text-2xl font-semibold dark:text-primary-text text-action">

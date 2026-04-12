@@ -8,12 +8,15 @@ interface NewTaskProps {
 }
 
 export function NewTask({ isVisible, onClose }: NewTaskProps) {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLFormElement>(null);
 
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current?.contains(e.target)) {
+      if (
+        containerRef.current &&
+        !containerRef.current?.contains(e.target as Node)
+      ) {
         onClose();
       }
     }
