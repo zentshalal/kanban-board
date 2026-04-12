@@ -1,8 +1,14 @@
 import { Column } from './Column';
 
-export function BoardContent() {
+interface BoardContentProps {
+  className?: string;
+}
+
+export function BoardContent({ className }: BoardContentProps) {
   return (
-    <div className="flex flex-row gap-x-6 pt-6 pb-2 px-6 col-span-3 md:col-span-4 row-span-8 sm:row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x dark:bg-main-dark bg-white">
+    <div
+      className={`${className ? className : 'col-span-4 sm:col-span-3 md:col-span-4'} flex flex-row gap-x-6 pt-6 pb-2 px-6 row-span-9 w-full h-full overflow-x-auto overflow-y-hidden custom-scrollbar-x dark:bg-main-dark bg-white`}
+    >
       {/* TODO COLUMN */}
       <Column
         name="TODO"

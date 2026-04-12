@@ -4,10 +4,9 @@ import { useState, useEffect } from 'react';
 
 interface NavbarProps {
   setNavbarHidden: () => void;
-  className?: string;
 }
 
-export function Navbar({ setNavbarHidden, className }: NavbarProps) {
+export function Navbar({ setNavbarHidden }: NavbarProps) {
   const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
   const [boardSelected, setBoardSelected] = useState<number>(0);
 
@@ -39,9 +38,7 @@ export function Navbar({ setNavbarHidden, className }: NavbarProps) {
   console.log();
 
   return (
-    <nav
-      className={`flex flex-col justify-between dark:bg-card-dark bg-main-white h-full row-span-10 border-r border-secondary-text/20 col-span-2 md:col-span-1 ${className}`}
-    >
+    <nav className="sm:flex flex-col justify-between dark:bg-card-dark bg-main-white h-full row-span-10 border-r border-secondary-text/20 hidden sm:col-span-2 md:col-span-1">
       <div>
         <div className="flex flex-row gap-x-4 items-center py-6 px-8">
           <div className="flex flex-row gap-x-1 justify-center">
