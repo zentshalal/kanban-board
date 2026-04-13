@@ -15,9 +15,15 @@ interface NewBoardProps {
   isVisible: boolean;
   onClose: () => void;
   userId: string;
+  onBoardCreated: (newBoard: Board) => void;
 }
 
-export function NewBoard({ isVisible, onClose, userId }: NewBoardProps) {
+export function NewBoard({
+  isVisible,
+  onClose,
+  userId,
+  onBoardCreated,
+}: NewBoardProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
   // Handles click outside the menu to close it
@@ -59,6 +65,7 @@ export function NewBoard({ isVisible, onClose, userId }: NewBoardProps) {
       console.log(data);
       onClose();
       setBoardName('');
+      onBoardCreated(data[0]);
     }
   }
 

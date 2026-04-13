@@ -18,6 +18,20 @@ import { useState, useEffect } from 'react';
 import type { Board } from './types';
 import type { PostgrestError } from '@supabase/supabase-js';
 
+// Generates a random user_id if there's none in localstorage
+function getUserId() {
+  const key = 'user_id';
+
+  let userId = localStorage.getItem(key);
+
+  if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem(key, userId);
+  }
+
+  return userId;
+}
+
 // Gets the boards of the user
 async function getBoards(): Promise<Board[] | null | undefined> {
   const {
@@ -50,20 +64,6 @@ function useWindowSize() {
   return isMobile;
 }
 
-// Generates a random user_id if there's none in localstorage
-function getUserId() {
-  const key = 'user_id';
-
-  let userId = localStorage.getItem(key);
-
-  if (!userId) {
-    userId = crypto.randomUUID();
-    localStorage.setItem(key, userId);
-  }
-
-  return userId;
-}
-
 function App() {
   const isMobile = useWindowSize();
 
@@ -71,6 +71,16 @@ function App() {
 
   const [boards, setBoards] = useState<Board[] | null | undefined>(null);
   const [selectedBoard, setSelectedBoard] = useState<string>('');
+
+  function handleBoardCreated(newBoard: Board) {
+    if (boards) {
+      setBoards([...boards, newBoard]);
+      setSelectedBoard(newBoard.id);
+    } else {
+      setBoards([newBoard]);
+      setSelectedBoard(newBoard.id);
+    }
+  }
 
   useEffect(() => {
     getBoards().then((data: Board[] | null | undefined) => {
@@ -144,6 +154,7 @@ function App() {
         isVisible={isNewBoardVisible}
         onClose={() => setIsNewBoardVisible(false)}
         userId={userId}
+        onBoardCreated={handleBoardCreated}
       />
     </main>
   );
