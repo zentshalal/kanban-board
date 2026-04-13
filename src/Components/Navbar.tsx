@@ -65,7 +65,7 @@ export function Navbar({
         </div>
         <div className="pt-4">
           <span className="dark:text-secondary-text text-card-dark/60 font-bold text-xs tracking-[0.2rem] pl-8">
-            ALL BOARDS ({boards?.length})
+            ALL BOARDS ({boards?.length ?? '0'})
           </span>
           <div className="flex flex-col py-6 pr-6 gap-y-2">
             {boards?.map((board) => (
