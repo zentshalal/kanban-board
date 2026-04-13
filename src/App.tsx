@@ -3,12 +3,37 @@ import { Banner } from './Components/Banner';
 import { Navbar } from './Components/Navbar';
 import { BoardContent } from './Components/BoardContent';
 import { NewTask } from './Components/NewTask';
+import { NewBoard } from './Components/NewBoard';
+
+// IMPORT SUPABASE
+import { supabase } from './supabase';
 
 // IMPORT ICON
 import { Eye } from 'lucide-react';
 
 // IMPORT REACT
 import { useState, useEffect } from 'react';
+
+// IMPORT TYPE
+import type { Board } from './types';
+import type { PostgrestError } from '@supabase/supabase-js';
+
+// Gets the boards of the user
+async function getBoards(): Promise<Board[] | null | undefined> {
+  const {
+    data,
+    error,
+  }: { data: Board[] | null; error: PostgrestError | null } = await supabase
+    .from('boards')
+    .select()
+    .eq('user_id', getUserId());
+
+  if (error) {
+    console.log(error.message);
+  } else {
+    return data;
+  }
+}
 
 // Checks if the user is on mobile
 function useWindowSize() {
@@ -44,11 +69,25 @@ function App() {
 
   const userId = getUserId();
 
+  const [boards, setBoards] = useState<Board[] | null | undefined>(null);
+  const [selectedBoard, setSelectedBoard] = useState<string>('');
+
+  useEffect(() => {
+    getBoards().then((data: Board[] | null | undefined) => {
+      setBoards(data);
+
+      if (data && data.length > 0) {
+        setSelectedBoard(data[0].id);
+      }
+    });
+  }, []);
+
   const [isNewTaskVisible, setIsNewTaskVisible] = useState<boolean>(false);
   // If the user is on mobile the navbar is naturally hidden
   const [isNavbarHidden, setIsNavbarHidden] = useState<boolean>(
     isMobile ? true : false
   );
+  const [isNewBoardVisible, setIsNewBoardVisible] = useState<boolean>(false);
 
   return (
     <main className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 grid-rows-10 w-screen h-screen">
@@ -56,6 +95,10 @@ function App() {
         isMobile={isMobile}
         setNavbarHidden={() => setIsNavbarHidden((prev) => !prev)}
         isNavbarHidden={isNavbarHidden}
+        boards={boards}
+        selectedBoard={selectedBoard}
+        onBoardChange={(boardName: string) => setSelectedBoard(boardName)}
+        addNewBoard={() => setIsNewBoardVisible((prev) => !prev)}
       />
       {/* Button version not on mobile */}
       {isNavbarHidden && !isMobile && (
@@ -86,10 +129,20 @@ function App() {
         addNewTask={() => setIsNewTaskVisible((prev) => !prev)}
         isNavbarHidden={isNavbarHidden}
       />
-      <BoardContent isNavbarHidden={isNavbarHidden} isMobile={isMobile} />
+      <BoardContent
+        isNavbarHidden={isNavbarHidden}
+        isMobile={isMobile}
+        selectedBoard={selectedBoard}
+      />
       <NewTask
+        actualBoard={selectedBoard}
         isVisible={isNewTaskVisible}
         onClose={() => setIsNewTaskVisible(false)}
+        userId={userId}
+      />
+      <NewBoard
+        isVisible={isNewBoardVisible}
+        onClose={() => setIsNewBoardVisible(false)}
         userId={userId}
       />
     </main>

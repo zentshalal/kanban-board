@@ -9,7 +9,6 @@ import { supabase } from '../supabase';
 
 // IMPORT TASK TYPE
 import type { Task } from '../types';
-import type { Status } from '../types';
 
 type TaskRequest = Omit<Task, 'id' | 'created_at'>;
 
@@ -17,14 +16,20 @@ interface NewTaskProps {
   isVisible: boolean;
   onClose: () => void;
   userId: string;
+  actualBoard: string;
 }
 
-export function NewTask({ isVisible, onClose, userId }: NewTaskProps) {
+export function NewTask({
+  isVisible,
+  onClose,
+  userId,
+  actualBoard,
+}: NewTaskProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [status, setStatus] = useState<Status>('todo');
+  const [column, setColumn] = useState<string>('todo');
 
   // Handles click outside the menu to close it
   useEffect(() => {
@@ -48,9 +53,10 @@ export function NewTask({ isVisible, onClose, userId }: NewTaskProps) {
     user_id: userId,
     title: title,
     description: description,
-    status: status,
+    column: column,
     position: 0,
     expires_at: null,
+    board: actualBoard,
   };
 
   async function createTask(e: React.FormEvent) {
@@ -70,7 +76,7 @@ export function NewTask({ isVisible, onClose, userId }: NewTaskProps) {
 
       setTitle('');
       setDescription('');
-      setStatus('todo');
+      setColumn('todo');
     }
   }
 
@@ -128,9 +134,9 @@ export function NewTask({ isVisible, onClose, userId }: NewTaskProps) {
                 </span>
                 <div className="w-full relative">
                   <select
-                    onChange={(e) => setStatus(e.target.value as Status)}
-                    name="status"
-                    id="status"
+                    onChange={(e) => setColumn(e.target.value as string)}
+                    name="column"
+                    id="column"
                     className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
                   >
                     <option value="todo">Todo</option>

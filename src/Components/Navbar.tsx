@@ -2,20 +2,27 @@ import { PanelsTopLeft, Moon, Sun, EyeOff } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
 
+import type { Board } from '../types';
+
 interface NavbarProps {
   setNavbarHidden: () => void;
   isNavbarHidden: boolean;
   isMobile: boolean;
+  boards: Board[] | null | undefined;
+  selectedBoard: string;
+  onBoardChange: (boardName: string) => void;
+  addNewBoard: () => void;
 }
 
 export function Navbar({
   setNavbarHidden,
   isNavbarHidden,
   isMobile,
+  boards,
+  selectedBoard,
+  onBoardChange,
+  addNewBoard,
 }: NavbarProps) {
-  const boards = ['Platform Launch', 'Marketing Plan', 'Roadmap'];
-  const [boardSelected, setBoardSelected] = useState<number>(0);
-
   // Defines the user's theme reading localStorage or accessing his theme preferences
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -58,20 +65,23 @@ export function Navbar({
         </div>
         <div className="pt-4">
           <span className="dark:text-secondary-text text-card-dark/60 font-bold text-xs tracking-[0.2rem] pl-8">
-            ALL BOARDS ({boards.length})
+            ALL BOARDS ({boards?.length})
           </span>
           <div className="flex flex-col py-6 pr-6 gap-y-2">
-            {boards.map((board) => (
+            {boards?.map((board) => (
               <button
-                key={board}
-                className={`flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 ${boardSelected === boards.indexOf(board) ? 'bg-action hover:bg-action/80 text-primary-text' : 'hover:bg-action/20 dark:text-secondary-text text-card-dark/60'}`}
-                onClick={() => setBoardSelected(boards.indexOf(board))}
+                key={board.id}
+                className={`flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 ${selectedBoard === board.name ? 'bg-action hover:bg-action/80 text-primary-text' : 'hover:bg-action/20 dark:text-secondary-text text-card-dark/60'}`}
+                onClick={() => onBoardChange(board.name)}
               >
                 <PanelsTopLeft />
-                <span className="font-semibold">{board}</span>
+                <span className="font-semibold">{board.name}</span>
               </button>
             ))}
-            <button className="flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 text-action/80 hover:bg-action/20">
+            <button
+              onClick={() => addNewBoard()}
+              className="flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 text-action/80 hover:bg-action/20"
+            >
               <PanelsTopLeft />
               <span className="font-semibold">+ Create New Board</span>
             </button>

@@ -3,7 +3,7 @@ import { FlagTriangleRight } from 'lucide-react';
 interface Task {
   id: string;
   title: string;
-  endDate: string;
+  endDate: string | null;
 }
 
 export function TaskCard({ id, title, endDate }: Task) {
