@@ -1,14 +1,30 @@
+// IMPORT ICONS
 import { ChevronDown, X } from 'lucide-react';
 
-import { useRef, useEffect } from 'react';
+// IMPORT REACT
+import { useRef, useEffect, useState } from 'react';
+
+// IMPORT SUPABASE CLIENT
+import { supabase } from '../supabase';
+
+// IMPORT TASK TYPE
+import type { Task } from '../types';
+import type { Status } from '../types';
+
+type TaskRequest = Omit<Task, 'id' | 'created_at'>;
 
 interface NewTaskProps {
   isVisible: boolean;
   onClose: () => void;
+  userId: string;
 }
 
-export function NewTask({ isVisible, onClose }: NewTaskProps) {
+export function NewTask({ isVisible, onClose, userId }: NewTaskProps) {
   const containerRef = useRef<HTMLFormElement>(null);
+
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [status, setStatus] = useState<Status>('todo');
 
   // Handles click outside the menu to close it
   useEffect(() => {
@@ -28,12 +44,43 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
     };
   }, [onClose]);
 
+  const taskToSend: TaskRequest = {
+    user_id: userId,
+    title: title,
+    description: description,
+    status: status,
+    position: 0,
+    expires_at: null,
+  };
+
+  async function createTask(e: React.FormEvent) {
+    e.preventDefault();
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert(taskToSend)
+      .select();
+
+    if (error) {
+      console.log(error.message);
+    } else {
+      console.log(data);
+      console.log('Success, task created!');
+      onClose();
+
+      setTitle('');
+      setDescription('');
+      setStatus('todo');
+    }
+  }
+
   return (
     <>
       {isVisible && (
         <div className="fixed inset-0 backdrop-brightness-50 flex items-center justify-center z-50 p-4">
           <form
             ref={containerRef}
+            onSubmit={createTask}
             className="dark:bg-card-dark bg-main-white rounded-lg p-8 w-full max-w-md shadow-2xl"
           >
             <div className="flex flex-row items-start justify-between">
@@ -56,6 +103,8 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
                 <input
                   type="text"
                   placeholder="e.g. Take a coffee break"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
                 />
               </label>
@@ -66,6 +115,8 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
                 </span>
                 <textarea
                   placeholder="e.g. It's always good to take a break. This 15 minutes break will recharge the batteries a little."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm resize-none"
                   rows={5}
                 ></textarea>
@@ -77,6 +128,7 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
                 </span>
                 <div className="w-full relative">
                   <select
+                    onChange={(e) => setStatus(e.target.value as Status)}
                     name="status"
                     id="status"
                     className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
@@ -95,7 +147,10 @@ export function NewTask({ isVisible, onClose }: NewTaskProps) {
                 </div>
               </label>
 
-              <button className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors">
+              <button
+                type="submit"
+                className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+              >
                 <span className="text-sm">Create Task</span>
               </button>
             </div>

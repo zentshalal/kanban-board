@@ -1,10 +1,13 @@
+// IMPORT COMPONENTS
 import { Banner } from './Components/Banner';
 import { Navbar } from './Components/Navbar';
 import { BoardContent } from './Components/BoardContent';
 import { NewTask } from './Components/NewTask';
 
+// IMPORT ICON
 import { Eye } from 'lucide-react';
 
+// IMPORT REACT
 import { useState, useEffect } from 'react';
 
 // Checks if the user is on mobile
@@ -22,8 +25,24 @@ function useWindowSize() {
   return isMobile;
 }
 
+// Generates a random user_id if there's none in localstorage
+function getUserId() {
+  const key = 'user_id';
+
+  let userId = localStorage.getItem(key);
+
+  if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem(key, userId);
+  }
+
+  return userId;
+}
+
 function App() {
   const isMobile = useWindowSize();
+
+  const userId = getUserId();
 
   const [isNewTaskVisible, setIsNewTaskVisible] = useState<boolean>(false);
   // If the user is on mobile the navbar is naturally hidden
@@ -71,6 +90,7 @@ function App() {
       <NewTask
         isVisible={isNewTaskVisible}
         onClose={() => setIsNewTaskVisible(false)}
+        userId={userId}
       />
     </main>
   );
