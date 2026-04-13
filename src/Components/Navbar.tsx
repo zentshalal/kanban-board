@@ -71,8 +71,8 @@ export function Navbar({
             {boards?.map((board) => (
               <button
                 key={board.id}
-                className={`flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 ${selectedBoard === board.name ? 'bg-action hover:bg-action/80 text-primary-text' : 'hover:bg-action/20 dark:text-secondary-text text-card-dark/60'}`}
-                onClick={() => onBoardChange(board.name)}
+                className={`flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 ${selectedBoard === board.id ? 'bg-action hover:bg-action/80 text-primary-text' : 'hover:bg-action/20 dark:text-secondary-text text-card-dark/60'}`}
+                onClick={() => onBoardChange(board.id)}
               >
                 <PanelsTopLeft />
                 <span className="font-semibold">{board.name}</span>

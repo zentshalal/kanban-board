@@ -17,7 +17,7 @@ export function TaskCard({ id, title, endDate }: Task) {
       </span>
       <span className="dark:text-secondary-text text-main-dark/40 text-sm font-semibold flex flex-row items-center gap-x-2">
         <FlagTriangleRight size={16} />
-        {endDate}
+        {endDate ?? 'Never'}
       </span>
     </div>
   );
