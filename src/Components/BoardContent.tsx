@@ -33,7 +33,7 @@ export function BoardContent({
         return (
           <Column
             key={column.id}
-            name={column.name}
+            name={column.name.toUpperCase()}
             tasks={columnTasks}
             color={column?.color}
           />
