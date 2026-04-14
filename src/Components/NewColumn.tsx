@@ -43,6 +43,7 @@ export function NewColumn({
         onClose();
         setColumnName('');
         setColumnColor('');
+        setErrorMessage('');
       }
     }
 
@@ -64,7 +65,7 @@ export function NewColumn({
     e.preventDefault();
 
     if (columnName === '') {
-      setErrorMessage(`You can't have an empty name for a column`);
+      setErrorMessage(`Your column can't have an empty name`);
       return;
     }
     const { data, error } = await supabase
@@ -102,6 +103,7 @@ export function NewColumn({
                   onClose();
                   setColumnColor('');
                   setColumnName('');
+                  setErrorMessage('');
                 }}
               >
                 <X />
@@ -135,7 +137,9 @@ export function NewColumn({
                 </div>
               </div>
               <div className="flex flex-col gap-y-4">
-                <p className="text-red-500 text-center">{errorMessage}</p>
+                {errorMessage && (
+                  <p className="text-red-500 text-center">{errorMessage}</p>
+                )}
                 <button
                   type="submit"
                   className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"

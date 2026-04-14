@@ -35,6 +35,8 @@ export function NewTask({
   const [description, setDescription] = useState<string>('');
   const [column, setColumn] = useState<string>('');
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -46,6 +48,7 @@ export function NewTask({
         setTitle('');
         setDescription('');
         setColumn('');
+        setErrorMessage('');
       }
     }
 
@@ -68,6 +71,11 @@ export function NewTask({
 
   async function createTask(e: React.FormEvent) {
     e.preventDefault();
+
+    if (title === '') {
+      setErrorMessage(`Your task can't have an empty name`);
+      return;
+    }
 
     const { data, error } = await supabase
       .from('tasks')
@@ -109,6 +117,7 @@ export function NewTask({
                   setTitle('');
                   setDescription('');
                   setColumn('');
+                  setErrorMessage('');
                 }}
               >
                 <X />
@@ -171,12 +180,17 @@ export function NewTask({
                 </div>
               </label>
 
-              <button
-                type="submit"
-                className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
-              >
-                <span className="text-sm">Create Task</span>
-              </button>
+              <div className="flex flex-col gap-y-4">
+                {errorMessage && (
+                  <p className="text-red-500 text-center">{errorMessage}</p>
+                )}
+                <button
+                  type="submit"
+                  className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+                >
+                  <span className="text-sm">Create Task</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>

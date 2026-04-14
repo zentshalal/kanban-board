@@ -28,6 +28,8 @@ export function NewBoard({
 
   const [boardName, setBoardName] = useState<string>('');
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -37,6 +39,7 @@ export function NewBoard({
       ) {
         onClose();
         setBoardName('');
+        setErrorMessage('');
       }
     }
 
@@ -55,6 +58,11 @@ export function NewBoard({
   async function createBoard(e: React.FormEvent) {
     e.preventDefault();
 
+    if (boardName === '') {
+      setErrorMessage(`Your board can't have an empty name`);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('boards')
       .insert(boardToSend)
@@ -63,7 +71,7 @@ export function NewBoard({
     if (error) {
       console.log(error.message);
     } else {
-      console.log(data);
+      setErrorMessage('');
       onClose();
       setBoardName('');
       onBoardCreated(data[0]);
@@ -88,6 +96,7 @@ export function NewBoard({
                 onClick={() => {
                   onClose();
                   setBoardName('');
+                  setErrorMessage('');
                 }}
               >
                 <X />
@@ -107,12 +116,17 @@ export function NewBoard({
                   className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
                 />
               </label>
-              <button
-                type="submit"
-                className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
-              >
-                <span className="text-sm">Create Board</span>
-              </button>
+              <div className="flex flex-col gap-y-4">
+                {errorMessage && (
+                  <p className="text-red-500 text-center">{errorMessage}</p>
+                )}
+                <button
+                  type="submit"
+                  className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+                >
+                  <span className="text-sm">Create Board</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>
