@@ -202,6 +202,8 @@ function App() {
   const [isNewBoardVisible, setIsNewBoardVisible] = useState<boolean>(false);
 
   const [isNewColumnVisible, setIsNewColumnVisible] = useState<boolean>(false);
+  const hasBoards = (boards?.length ?? 0) > 0;
+  const hasColumns = (columns?.length ?? 0) > 0;
 
   return (
     <main className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 grid-rows-10 w-screen h-screen">
@@ -240,16 +242,41 @@ function App() {
       )}
       <Banner
         isMobile={isMobile}
-        addNewTask={() => setIsNewTaskVisible((prev) => !prev)}
+        addNewTask={() => {
+          if (!hasColumns) return;
+          setIsNewTaskVisible((prev) => !prev);
+        }}
         isNavbarHidden={isNavbarHidden}
+        canCreateTask={hasColumns}
       />
-      <BoardContent
-        isNavbarHidden={isNavbarHidden}
-        isMobile={isMobile}
-        tasks={tasks}
-        columns={columns}
-        addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
-      />
+      {hasBoards ? (
+        <BoardContent
+          isNavbarHidden={isNavbarHidden}
+          isMobile={isMobile}
+          tasks={tasks}
+          columns={columns}
+          addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
+        />
+      ) : (
+        <section
+          className={`${isNavbarHidden ? 'sm:col-span-5 md:col-span-6' : ''} ${isMobile && !isNavbarHidden ? 'col-span-1 -z-1 hidden' : ''} col-span-4 sm:col-span-3 md:col-span-4 row-span-9 w-full h-full flex items-center justify-center dark:bg-main-dark bg-white px-6`}
+        >
+          <div className="text-center max-w-md">
+            <h2 className="text-2xl font-bold dark:text-primary-text text-card-dark/60 mb-3">
+              No board yet
+            </h2>
+            <p className="dark:text-secondary-text text-card-dark/70 mb-6">
+              Create your first board to start organizing your tasks.
+            </p>
+            <button
+              onClick={() => setIsNewBoardVisible(true)}
+              className="px-4 py-2 rounded-full bg-action font-semibold cursor-pointer hover:bg-action/80 transition-colors"
+            >
+              + Create Board
+            </button>
+          </div>
+        </section>
+      )}
       <NewTask
         handleTaskCreated={handleTaskCreated}
         actualBoard={selectedBoard}

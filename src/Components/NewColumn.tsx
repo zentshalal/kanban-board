@@ -95,7 +95,7 @@ export function NewColumn({
           >
             <div className="flex flex-row items-start justify-between">
               <h2 className="text-lg font-bold mb-4 dark:text-primary-text text-card-dark/60">
-                Create New Board
+                Create New Column
               </h2>
               <button
                 className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
@@ -144,7 +144,7 @@ export function NewColumn({
                   type="submit"
                   className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
                 >
-                  <span className="text-sm">Create Board</span>
+                  <span className="text-sm">Create Column</span>
                 </button>
               </div>
             </div>
