@@ -38,6 +38,15 @@ body {
   @apply dark:bg-[#3e3f4e] rounded-[10px];
 }
 
+.styled-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.styled-color::-webkit-color-swatch {
+  border: 2px solid var(--color-action, 0.4);
+  border-radius: 100%;
+}
+
 @media screen and (max-width: 1280px) {
   html {
     font-size: 14px;

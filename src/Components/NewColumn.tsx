@@ -31,6 +31,8 @@ export function NewColumn({
   const [columnName, setColumnName] = useState<string>('');
   const [columnColor, setColumnColor] = useState<string>('');
 
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -61,6 +63,10 @@ export function NewColumn({
   async function createColumn(e: React.FormEvent) {
     e.preventDefault();
 
+    if (columnName === '') {
+      setErrorMessage(`You can't have an empty name for a column`);
+      return;
+    }
     const { data, error } = await supabase
       .from('columns')
       .insert(columnToSend)
@@ -69,7 +75,7 @@ export function NewColumn({
     if (error) {
       console.log(error.message);
     } else {
-      console.log(data);
+      setErrorMessage('');
       onClose();
       setColumnName('');
       setColumnColor('');
@@ -103,36 +109,40 @@ export function NewColumn({
             </div>
 
             <div className="gap-y-6 flex flex-col w-full">
-              <label className="flex flex-col gap-y-2">
-                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
-                  Name
-                </span>
-                <input
-                  type="text"
-                  placeholder="e.g. Todo"
-                  value={columnName}
-                  onChange={(e) => setColumnName(e.target.value)}
-                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-y-2">
-                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
-                  Color
-                </span>
-                <input
-                  type="text"
-                  placeholder="e.g. #fff"
-                  value={columnColor}
-                  onChange={(e) => setColumnColor(e.target.value)}
-                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
-                />
-              </label>
-              <button
-                type="submit"
-                className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
-              >
-                <span className="text-sm">Create Board</span>
-              </button>
+              <div className="flex items-center w-full h-full gap-x-4">
+                <label className="flex flex-col gap-y-2 w-2/3">
+                  <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                    Name
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="e.g. Todo"
+                    value={columnName}
+                    onChange={(e) => setColumnName(e.target.value)}
+                    className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                  />
+                </label>
+                <div className="flex flex-col gap-y-2 w-1/4">
+                  <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                    Color
+                  </span>
+                  <input
+                    type="color"
+                    value={columnColor}
+                    onChange={(e) => setColumnColor(e.target.value)}
+                    className="h-8 w-8 rounded-lg cursor-pointer outline-none ring-0 styled-color"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-y-4">
+                <p className="text-red-500 text-center">{errorMessage}</p>
+                <button
+                  type="submit"
+                  className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+                >
+                  <span className="text-sm">Create Board</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>

@@ -156,7 +156,7 @@ export function NewTask({
                     {columns?.map((column) => {
                       return (
                         <option key={column.id} value={column.id}>
-                          {column.name}
+                          {column.name.toUpperCase()}
                         </option>
                       );
                     }) ?? <option>No Column</option>}
