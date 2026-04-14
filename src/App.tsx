@@ -4,6 +4,7 @@ import { Navbar } from './Components/Navbar';
 import { BoardContent } from './Components/BoardContent';
 import { NewTask } from './Components/NewTask';
 import { NewBoard } from './Components/NewBoard';
+import { NewColumn } from './Components/NewColumn';
 
 // IMPORT SUPABASE
 import { supabase } from './supabase';
@@ -65,8 +66,7 @@ async function getColumns(
     return data as ColumnType[] | null;
   }
 
-  // Supports schemas using board_id instead of board.
-  if (error.message.includes("column columns.board does not exist")) {
+  if (error.message.includes('column columns.board does not exist')) {
     const { data: fallbackData, error: fallbackError } = await supabase
       .from('columns')
       .select()
@@ -86,8 +86,14 @@ async function getColumns(
 }
 
 // Gets the tasks of the user
-async function getTasks(board: string, userId: string): Promise<TaskType[] | null> {
-  const { data, error }: { data: TaskType[] | null; error: PostgrestError | null } = await supabase
+async function getTasks(
+  board: string,
+  userId: string
+): Promise<TaskType[] | null> {
+  const {
+    data,
+    error,
+  }: { data: TaskType[] | null; error: PostgrestError | null } = await supabase
     .from('tasks')
     .select()
     .eq('user_id', userId)
@@ -97,16 +103,16 @@ async function getTasks(board: string, userId: string): Promise<TaskType[] | nul
     return data;
   }
 
-  // Supports schemas using board_id instead of board.
-  if (error.message.includes("column tasks.board does not exist")) {
+  if (error.message.includes('column tasks.board does not exist')) {
     const {
       data: fallbackData,
       error: fallbackError,
-    }: { data: TaskType[] | null; error: PostgrestError | null } = await supabase
-      .from('tasks')
-      .select()
-      .eq('user_id', userId)
-      .eq('board_id', board);
+    }: { data: TaskType[] | null; error: PostgrestError | null } =
+      await supabase
+        .from('tasks')
+        .select()
+        .eq('user_id', userId)
+        .eq('board_id', board);
 
     if (fallbackError) {
       console.log(fallbackError.message);
@@ -148,17 +154,16 @@ function App() {
   const [tasks, setTasks] = useState<TaskType[] | null | undefined>(null);
 
   function handleBoardCreated(newBoard: BoardType) {
-    if (boards) {
-      setBoards([...boards, newBoard]);
-      setSelectedBoard(newBoard.id);
-    } else {
-      setBoards([newBoard]);
-      setSelectedBoard(newBoard.id);
-    }
+    setBoards((prev) => [...(prev ?? []), newBoard]);
+    setSelectedBoard(newBoard.id);
   }
 
   function handleTaskCreated(newTask: TaskType) {
     setTasks((prev) => [...(prev ?? []), newTask]);
+  }
+
+  function handleColumnCreated(newColumn: ColumnType) {
+    setColumns((prev) => [...(prev ?? []), newColumn]);
   }
 
   useEffect(() => {
@@ -179,16 +184,14 @@ function App() {
     Promise.all([
       getColumns(selectedBoard, userId),
       getTasks(selectedBoard, userId),
-    ]).then(
-      ([columnsData, tasksData]) => {
-        setColumns(columnsData);
-        setTasks(tasksData);
-        console.log('debug:selectedBoard', selectedBoard);
-        console.log('debug:userId', userId);
-        console.log('debug:columnsData', columnsData);
-        console.log('debug:tasksData', tasksData);
-      }
-    );
+    ]).then(([columnsData, tasksData]) => {
+      setColumns(columnsData);
+      setTasks(tasksData);
+      console.log('debug:selectedBoard', selectedBoard);
+      console.log('debug:userId', userId);
+      console.log('debug:columnsData', columnsData);
+      console.log('debug:tasksData', tasksData);
+    });
   }, [selectedBoard, userId]);
 
   const [isNewTaskVisible, setIsNewTaskVisible] = useState<boolean>(false);
@@ -197,6 +200,8 @@ function App() {
     isMobile ? true : false
   );
   const [isNewBoardVisible, setIsNewBoardVisible] = useState<boolean>(false);
+
+  const [isNewColumnVisible, setIsNewColumnVisible] = useState<boolean>(false);
 
   return (
     <main className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 grid-rows-10 w-screen h-screen">
@@ -243,6 +248,7 @@ function App() {
         isMobile={isMobile}
         tasks={tasks}
         columns={columns}
+        addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
       />
       <NewTask
         handleTaskCreated={handleTaskCreated}
@@ -256,6 +262,13 @@ function App() {
         onClose={() => setIsNewBoardVisible(false)}
         userId={userId}
         onBoardCreated={handleBoardCreated}
+      />
+      <NewColumn
+        isVisible={isNewColumnVisible}
+        onClose={() => setIsNewColumnVisible(false)}
+        userId={userId}
+        onColumnCreated={handleColumnCreated}
+        actualBoard={selectedBoard}
       />
     </main>
   );

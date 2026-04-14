@@ -9,6 +9,7 @@ interface BoardContentProps {
   isMobile: boolean;
   tasks: TaskType[] | null | undefined;
   columns: ColumnType[] | null | undefined;
+  addNewColumn: () => void;
 }
 
 export function BoardContent({
@@ -16,6 +17,7 @@ export function BoardContent({
   isMobile,
   tasks,
   columns,
+  addNewColumn,
 }: BoardContentProps) {
   return (
     <div
@@ -39,7 +41,10 @@ export function BoardContent({
         );
       })}
       {/* NEW COLUMN */}
-      <button className="dark:bg-card-dark/30 bg-main-white/20 rounded-xl font-bold cursor-pointer hover:dark:bg-card-dark/60 hover:bg-main-dark/20 transition-colors w-80 shrink-0 h-full">
+      <button
+        onClick={addNewColumn}
+        className="dark:bg-card-dark/30 bg-main-white/20 rounded-xl font-bold cursor-pointer hover:dark:bg-card-dark/60 hover:bg-main-dark/20 transition-colors w-80 shrink-0 h-full"
+      >
         <p className="text-2xl dark:text-primary-text text-card-dark/60">
           + New Column
         </p>

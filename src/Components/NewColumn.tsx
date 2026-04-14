@@ -1,0 +1,136 @@
+// IMPORT ICONS
+import { X } from 'lucide-react';
+
+// IMPORT REACT
+import { useRef, useEffect, useState } from 'react';
+
+// IMPORT SUPABASE CLIENT
+import { supabase } from '../supabase';
+
+// IMPORT TYPE
+import type { ColumnType } from '../types';
+type ColumnRequest = Omit<ColumnType, 'id'>;
+
+interface NewColumnProps {
+  isVisible: boolean;
+  onClose: () => void;
+  userId: string;
+  onColumnCreated: (newColumn: ColumnType) => void;
+  actualBoard: string;
+}
+
+export function NewColumn({
+  isVisible,
+  onClose,
+  userId,
+  onColumnCreated,
+  actualBoard,
+}: NewColumnProps) {
+  const containerRef = useRef<HTMLFormElement>(null);
+
+  // Handles click outside the menu to close it
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current?.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
+  const [columnName, setColumnName] = useState<string>('');
+  const [columnColor, setColumnColor] = useState<string>('');
+
+  const columnToSend: ColumnRequest = {
+    user_id: userId,
+    name: columnName,
+    color: columnColor,
+    board: actualBoard,
+  };
+
+  async function createColumn(e: React.FormEvent) {
+    e.preventDefault();
+
+    const { data, error } = await supabase
+      .from('columns')
+      .insert(columnToSend)
+      .select();
+
+    if (error) {
+      console.log(error.message);
+    } else {
+      console.log(data);
+      onClose();
+      setColumnName('');
+      setColumnColor('');
+      onColumnCreated(data[0]);
+    }
+  }
+
+  return (
+    <>
+      {isVisible && (
+        <div className="fixed inset-0 backdrop-brightness-50 flex items-center justify-center z-50 p-4">
+          <form
+            ref={containerRef}
+            onSubmit={createColumn}
+            className="dark:bg-card-dark bg-main-white rounded-lg p-8 w-full max-w-md shadow-2xl"
+          >
+            <div className="flex flex-row items-start justify-between">
+              <h2 className="text-lg font-bold mb-4 dark:text-primary-text text-card-dark/60">
+                Create New Board
+              </h2>
+              <button
+                className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
+                onClick={onClose}
+              >
+                <X />
+              </button>
+            </div>
+
+            <div className="gap-y-6 flex flex-col w-full">
+              <label className="flex flex-col gap-y-2">
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Name
+                </span>
+                <input
+                  type="text"
+                  placeholder="e.g. Todo"
+                  value={columnName}
+                  onChange={(e) => setColumnName(e.target.value)}
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-y-2">
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Color
+                </span>
+                <input
+                  type="text"
+                  placeholder="e.g. #fff"
+                  value={columnColor}
+                  onChange={(e) => setColumnColor(e.target.value)}
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                />
+              </label>
+              <button
+                type="submit"
+                className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+              >
+                <span className="text-sm">Create Board</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </>
+  );
+}
