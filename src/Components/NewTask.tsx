@@ -186,7 +186,7 @@ export function NewTask({
                 )}
                 <button
                   type="submit"
-                  className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
+                  className="w-full bg-action py-2 rounded-full font-semibold hover:bg-action/80 transition-colors cursor-pointer"
                 >
                   <span className="text-sm">Create Task</span>
                 </button>
