@@ -8,7 +8,7 @@ import { useRef, useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
 // IMPORT TASK TYPE
-import type { TaskType } from '../types';
+import type { TaskType, ColumnType } from '../types';
 
 type TaskRequest = Omit<TaskType, 'id' | 'created_at'>;
 
@@ -18,6 +18,7 @@ interface NewTaskProps {
   userId: string;
   actualBoard: string;
   handleTaskCreated: (newTask: TaskType) => void;
+  columns: ColumnType[];
 }
 
 export function NewTask({
@@ -26,12 +27,13 @@ export function NewTask({
   userId,
   actualBoard,
   handleTaskCreated,
+  columns,
 }: NewTaskProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [column, setColumn] = useState<string>('todo');
+  const [column, setColumn] = useState<string>('');
 
   // Handles click outside the menu to close it
   useEffect(() => {
@@ -55,7 +57,7 @@ export function NewTask({
     user_id: userId,
     title: title,
     description: description,
-    column: column,
+    column: column !== '' ? column : columns[0]?.id,
     position: 0,
     expires_at: null,
     board: actualBoard,
@@ -78,7 +80,7 @@ export function NewTask({
 
       setTitle('');
       setDescription('');
-      setColumn('todo');
+      setColumn('');
 
       handleTaskCreated(data[0]);
     }
@@ -143,9 +145,13 @@ export function NewTask({
                     id="column"
                     className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
                   >
-                    <option value="todo">Todo</option>
-                    <option value="doing">Doing</option>
-                    <option value="done">Done</option>
+                    {columns?.map((column) => {
+                      return (
+                        <option key={column.id} value={column.id}>
+                          {column.name}
+                        </option>
+                      );
+                    }) ?? <option>No Column</option>}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                     <ChevronDown

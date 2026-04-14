@@ -256,6 +256,7 @@ function App() {
         isVisible={isNewTaskVisible}
         onClose={() => setIsNewTaskVisible(false)}
         userId={userId}
+        columns={columns ?? []}
       />
       <NewBoard
         isVisible={isNewBoardVisible}

@@ -27,13 +27,7 @@ export function BoardContent({
       {columns?.map((column) => {
         const columnTasks =
           tasks?.filter((task) => {
-            const normalizedTaskColumn = task.column.trim().toLowerCase();
-            const normalizedColumnName = column.name.trim().toLowerCase();
-
-            return (
-              task.column === column.id ||
-              normalizedTaskColumn === normalizedColumnName
-            );
+            return task.column === column.id;
           }) ?? [];
 
         return (
