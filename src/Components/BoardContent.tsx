@@ -37,7 +37,12 @@ export function BoardContent({
           }) ?? [];
 
         return (
-          <Column key={column.id} name={column.name} tasks={columnTasks} />
+          <Column
+            key={column.id}
+            name={column.name}
+            tasks={columnTasks}
+            color={column?.color}
+          />
         );
       })}
       {/* NEW COLUMN */}

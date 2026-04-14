@@ -7,14 +7,20 @@ import type { TaskType } from '../types';
 interface Column {
   name: string;
   tasks?: TaskType[] | [];
+  color: string;
 }
 
-export function Column({ name, tasks }: Column) {
+export function Column({ name, tasks, color }: Column) {
   return (
     <div className="flex flex-col gap-y-4 h-full min-h-0 shrink-0 w-80">
       <div className="flex flex-row items-center gap-x-3 mb-2">
         <div
-          className={`w-3 h-3 rounded-full ${name === 'DONE' ? 'bg-lime-500' : name === 'DOING' ? 'bg-purple-600' : 'bg-cyan-500'}`}
+          style={{
+            backgroundColor: color,
+            width: 12,
+            height: 12,
+            borderRadius: 100,
+          }}
         ></div>
         <span className="font-bold tracking-widest dark:text-secondary-text text-card-dark/60 text-xs">
           {name} ({tasks ? tasks?.length : 0})
