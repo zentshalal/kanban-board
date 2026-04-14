@@ -2,11 +2,11 @@
 import { TaskCard } from './TaskCard';
 
 // IMPORT TYPE
-import type { Task } from '../types';
+import type { TaskType } from '../types';
 
 interface Column {
   name: string;
-  tasks?: Task[] | [];
+  tasks?: TaskType[] | [];
 }
 
 export function Column({ name, tasks }: Column) {
@@ -22,7 +22,7 @@ export function Column({ name, tasks }: Column) {
       </div>
       <div className="flex flex-col gap-y-4 overflow-y-auto max-h-full pr-1 custom-scrollbar-y">
         {tasks && tasks.length > 0 ? (
-          tasks.map((task) => (
+          tasks.map((task: TaskType) => (
             <TaskCard
               key={task.id}
               id={task.id}

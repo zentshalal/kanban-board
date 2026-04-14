@@ -15,7 +15,7 @@ import { Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 // IMPORT TYPE
-import type { Board } from './types';
+import type { BoardType, TaskType, ColumnType } from './types';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 // Generates a random user_id if there's none in localstorage
@@ -33,20 +33,91 @@ function getUserId() {
 }
 
 // Gets the boards of the user
-async function getBoards(): Promise<Board[] | null | undefined> {
+async function getBoards(userId: string): Promise<BoardType[] | null> {
   const {
     data,
     error,
-  }: { data: Board[] | null; error: PostgrestError | null } = await supabase
+  }: { data: BoardType[] | null; error: PostgrestError | null } = await supabase
     .from('boards')
     .select()
-    .eq('user_id', getUserId());
+    .eq('user_id', userId);
 
   if (error) {
     console.log(error.message);
-  } else {
+    return null;
+  }
+
+  return data;
+}
+
+// Gets the columns of the user
+async function getColumns(
+  board: string,
+  userId: string
+): Promise<ColumnType[] | null> {
+  const { data, error } = await supabase
+    .from('columns')
+    .select()
+    .eq('user_id', userId)
+    .eq('board', board);
+
+  if (!error) {
+    return data as ColumnType[] | null;
+  }
+
+  // Supports schemas using board_id instead of board.
+  if (error.message.includes("column columns.board does not exist")) {
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('columns')
+      .select()
+      .eq('user_id', userId)
+      .eq('board_id', board);
+
+    if (fallbackError) {
+      console.log(fallbackError.message);
+      return null;
+    }
+
+    return fallbackData as ColumnType[] | null;
+  }
+
+  console.log(error.message);
+  return null;
+}
+
+// Gets the tasks of the user
+async function getTasks(board: string, userId: string): Promise<TaskType[] | null> {
+  const { data, error }: { data: TaskType[] | null; error: PostgrestError | null } = await supabase
+    .from('tasks')
+    .select()
+    .eq('user_id', userId)
+    .eq('board', board);
+
+  if (!error) {
     return data;
   }
+
+  // Supports schemas using board_id instead of board.
+  if (error.message.includes("column tasks.board does not exist")) {
+    const {
+      data: fallbackData,
+      error: fallbackError,
+    }: { data: TaskType[] | null; error: PostgrestError | null } = await supabase
+      .from('tasks')
+      .select()
+      .eq('user_id', userId)
+      .eq('board_id', board);
+
+    if (fallbackError) {
+      console.log(fallbackError.message);
+      return null;
+    }
+
+    return fallbackData;
+  }
+
+  console.log(error.message);
+  return null;
 }
 
 // Checks if the user is on mobile
@@ -69,10 +140,14 @@ function App() {
 
   const userId = getUserId();
 
-  const [boards, setBoards] = useState<Board[] | null | undefined>(null);
+  const [boards, setBoards] = useState<BoardType[] | null | undefined>(null);
   const [selectedBoard, setSelectedBoard] = useState<string>('');
 
-  function handleBoardCreated(newBoard: Board) {
+  const [columns, setColumns] = useState<ColumnType[] | null | undefined>(null);
+
+  const [tasks, setTasks] = useState<TaskType[] | null | undefined>(null);
+
+  function handleBoardCreated(newBoard: BoardType) {
     if (boards) {
       setBoards([...boards, newBoard]);
       setSelectedBoard(newBoard.id);
@@ -82,15 +157,39 @@ function App() {
     }
   }
 
+  function handleTaskCreated(newTask: TaskType) {
+    setTasks((prev) => [...(prev ?? []), newTask]);
+  }
+
   useEffect(() => {
-    getBoards().then((data: Board[] | null | undefined) => {
+    getBoards(userId).then((data: BoardType[] | null) => {
       setBoards(data);
 
       if (data && data.length > 0) {
         setSelectedBoard(data[0].id);
       }
     });
-  }, []);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!selectedBoard) {
+      return;
+    }
+
+    Promise.all([
+      getColumns(selectedBoard, userId),
+      getTasks(selectedBoard, userId),
+    ]).then(
+      ([columnsData, tasksData]) => {
+        setColumns(columnsData);
+        setTasks(tasksData);
+        console.log('debug:selectedBoard', selectedBoard);
+        console.log('debug:userId', userId);
+        console.log('debug:columnsData', columnsData);
+        console.log('debug:tasksData', tasksData);
+      }
+    );
+  }, [selectedBoard, userId]);
 
   const [isNewTaskVisible, setIsNewTaskVisible] = useState<boolean>(false);
   // If the user is on mobile the navbar is naturally hidden
@@ -142,9 +241,11 @@ function App() {
       <BoardContent
         isNavbarHidden={isNavbarHidden}
         isMobile={isMobile}
-        selectedBoard={selectedBoard}
+        tasks={tasks}
+        columns={columns}
       />
       <NewTask
+        handleTaskCreated={handleTaskCreated}
         actualBoard={selectedBoard}
         isVisible={isNewTaskVisible}
         onClose={() => setIsNewTaskVisible(false)}

@@ -8,15 +8,16 @@ import { useRef, useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
 // IMPORT TASK TYPE
-import type { Task } from '../types';
+import type { TaskType } from '../types';
 
-type TaskRequest = Omit<Task, 'id' | 'created_at'>;
+type TaskRequest = Omit<TaskType, 'id' | 'created_at'>;
 
 interface NewTaskProps {
   isVisible: boolean;
   onClose: () => void;
   userId: string;
   actualBoard: string;
+  handleTaskCreated: (newTask: TaskType) => void;
 }
 
 export function NewTask({
@@ -24,6 +25,7 @@ export function NewTask({
   onClose,
   userId,
   actualBoard,
+  handleTaskCreated,
 }: NewTaskProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
@@ -77,6 +79,8 @@ export function NewTask({
       setTitle('');
       setDescription('');
       setColumn('todo');
+
+      handleTaskCreated(data[0]);
     }
   }
 

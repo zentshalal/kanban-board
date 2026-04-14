@@ -1,4 +1,4 @@
-export interface Task {
+export interface TaskType {
   id: string;
   user_id: string;
   title: string;
@@ -9,8 +9,16 @@ export interface Task {
   board: string;
 }
 
-export interface Board {
+export interface BoardType {
   id: string;
   user_id: string;
   name: string;
+}
+
+export interface ColumnType {
+  id: string;
+  user_id: string;
+  name: string;
+  color: string;
+  board: string;
 }

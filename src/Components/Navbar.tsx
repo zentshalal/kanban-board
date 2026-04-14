@@ -2,13 +2,13 @@ import { PanelsTopLeft, Moon, Sun, EyeOff } from 'lucide-react';
 
 import { useState, useEffect } from 'react';
 
-import type { Board } from '../types';
+import type { BoardType } from '../types';
 
 interface NavbarProps {
   setNavbarHidden: () => void;
   isNavbarHidden: boolean;
   isMobile: boolean;
-  boards: Board[] | null | undefined;
+  boards: BoardType[] | null | undefined;
   selectedBoard: string;
   onBoardChange: (boardName: string) => void;
   addNewBoard: () => void;

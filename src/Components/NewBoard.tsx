@@ -8,14 +8,14 @@ import { useRef, useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 
 // IMPORT BOARD TYPE
-import type { Board } from '../types';
-type BoardRequest = Omit<Board, 'id'>;
+import type { BoardType } from '../types';
+type BoardRequest = Omit<BoardType, 'id'>;
 
 interface NewBoardProps {
   isVisible: boolean;
   onClose: () => void;
   userId: string;
-  onBoardCreated: (newBoard: Board) => void;
+  onBoardCreated: (newBoard: BoardType) => void;
 }
 
 export function NewBoard({
@@ -107,7 +107,7 @@ export function NewBoard({
                 type="submit"
                 className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors"
               >
-                <span className="text-sm">Create Task</span>
+                <span className="text-sm">Create Board</span>
               </button>
             </div>
           </form>
