@@ -43,6 +43,9 @@ export function NewTask({
         !containerRef.current?.contains(e.target as Node)
       ) {
         onClose();
+        setTitle('');
+        setDescription('');
+        setColumn('');
       }
     }
 
@@ -101,7 +104,12 @@ export function NewTask({
               </h2>
               <button
                 className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  setTitle('');
+                  setDescription('');
+                  setColumn('');
+                }}
               >
                 <X />
               </button>

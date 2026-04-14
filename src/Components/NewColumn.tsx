@@ -28,6 +28,9 @@ export function NewColumn({
 }: NewColumnProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
+  const [columnName, setColumnName] = useState<string>('');
+  const [columnColor, setColumnColor] = useState<string>('');
+
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -36,6 +39,8 @@ export function NewColumn({
         !containerRef.current?.contains(e.target as Node)
       ) {
         onClose();
+        setColumnName('');
+        setColumnColor('');
       }
     }
 
@@ -45,9 +50,6 @@ export function NewColumn({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
-
-  const [columnName, setColumnName] = useState<string>('');
-  const [columnColor, setColumnColor] = useState<string>('');
 
   const columnToSend: ColumnRequest = {
     user_id: userId,
@@ -90,7 +92,11 @@ export function NewColumn({
               </h2>
               <button
                 className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  setColumnColor('');
+                  setColumnName('');
+                }}
               >
                 <X />
               </button>

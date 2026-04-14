@@ -26,6 +26,8 @@ export function NewBoard({
 }: NewBoardProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
+  const [boardName, setBoardName] = useState<string>('');
+
   // Handles click outside the menu to close it
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -34,6 +36,7 @@ export function NewBoard({
         !containerRef.current?.contains(e.target as Node)
       ) {
         onClose();
+        setBoardName('');
       }
     }
 
@@ -43,8 +46,6 @@ export function NewBoard({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
-
-  const [boardName, setBoardName] = useState<string>('');
 
   const boardToSend: BoardRequest = {
     user_id: userId,
@@ -84,7 +85,10 @@ export function NewBoard({
               </h2>
               <button
                 className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  setBoardName('');
+                }}
               >
                 <X />
               </button>
