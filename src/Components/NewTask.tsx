@@ -1,5 +1,5 @@
 // IMPORT ICONS
-import { ChevronDown, X } from 'lucide-react';
+import { Calendar, ChevronDown, X } from 'lucide-react';
 
 // IMPORT REACT
 import { useRef, useEffect, useState } from 'react';
@@ -34,6 +34,8 @@ export function NewTask({
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [column, setColumn] = useState<string>('');
+  const [dueDate, setDueDate] = useState<string>('');
+  const [isNever, setIsNever] = useState<boolean>(true);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -48,6 +50,8 @@ export function NewTask({
         setTitle('');
         setDescription('');
         setColumn('');
+        setDueDate('');
+        setIsNever(true);
         setErrorMessage('');
       }
     }
@@ -65,7 +69,7 @@ export function NewTask({
     description: description,
     column: column !== '' ? column : columns[0]?.id,
     position: 0,
-    expires_at: null,
+    expires_at: isNever || dueDate === '' ? null : dueDate,
     board: actualBoard,
   };
 
@@ -74,6 +78,11 @@ export function NewTask({
 
     if (title === '') {
       setErrorMessage(`Your task can't have an empty name`);
+      return;
+    }
+
+    if (!isNever && dueDate === '') {
+      setErrorMessage(`You have to choose a date or check the box 'never'`);
       return;
     }
 
@@ -92,6 +101,8 @@ export function NewTask({
       setTitle('');
       setDescription('');
       setColumn('');
+      setDueDate('');
+      setIsNever(true);
 
       handleTaskCreated(data[0]);
     }
@@ -117,6 +128,8 @@ export function NewTask({
                   setTitle('');
                   setDescription('');
                   setColumn('');
+                  setDueDate('');
+                  setIsNever(true);
                   setErrorMessage('');
                 }}
               >
@@ -177,6 +190,56 @@ export function NewTask({
                       className="dark:text-action text-action/40"
                     />
                   </div>
+                </div>
+              </label>
+
+              <label className="flex flex-col gap-y-2">
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Due Date
+                </span>
+                <div className="flex flex-row gap-x-2 items-center">
+                  <div className="relative max-w-sm">
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <Calendar size={16} />
+                    </div>
+                    <input
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setDueDate(value);
+                        if (value !== '') {
+                          setIsNever(false);
+                        }
+                      }}
+                      disabled={isNever}
+                      className={`outline-none border-2 rounded-lg px-2 py-2 dark:text-primary-text text-card-dark/60 ${isNever ? 'dark:border-secondary-text/20 border-action/20 opacity-50 cursor-not-allowed' : 'dark:border-secondary-text/40 border-action/40'}`}
+                    />
+                  </div>
+                  <label className="group flex items-center gap-x-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={isNever}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setIsNever(checked);
+                        if (checked) {
+                          setDueDate('');
+                        }
+                      }}
+                      className="sr-only"
+                    />
+                    <span
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isNever ? 'bg-action' : 'bg-slate-400/50 dark:bg-slate-600'}`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${isNever ? 'translate-x-6' : 'translate-x-1'}`}
+                      />
+                    </span>
+                    <span className="dark:text-primary-text text-card-dark/60 font-semibold text-sm">
+                      Never
+                    </span>
+                  </label>
                 </div>
               </label>
 

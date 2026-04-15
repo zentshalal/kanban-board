@@ -10,6 +10,7 @@ interface BoardContentProps {
   tasks: TaskType[] | null | undefined;
   columns: ColumnType[] | null | undefined;
   onTaskDeleted: (taskId: string) => void;
+  onTaskEdited: (task: TaskType) => void;
   addNewColumn: () => void;
 }
 
@@ -19,6 +20,7 @@ export function BoardContent({
   tasks,
   columns,
   onTaskDeleted,
+  onTaskEdited,
   addNewColumn,
 }: BoardContentProps) {
   const hasColumns = (columns?.length ?? 0) > 0;
@@ -43,6 +45,7 @@ export function BoardContent({
                 tasks={columnTasks}
                 color={column?.color}
                 onTaskDeleted={onTaskDeleted}
+                onTaskEdited={onTaskEdited}
               />
             );
           })}

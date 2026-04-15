@@ -47,6 +47,11 @@ body {
   border-radius: 100%;
 }
 
+input[type='date']::-webkit-calendar-picker-indicator {
+  background-image: url('ton-icone-custom.svg');
+  cursor: pointer;
+}
+
 @media screen and (max-width: 1280px) {
   html {
     font-size: 14px;

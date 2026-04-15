@@ -166,6 +166,12 @@ function App() {
     setTasks((prev) => (prev ?? []).filter((task) => task.id !== taskId));
   }
 
+  function handleTaskEdited(editedTask: TaskType) {
+    setTasks((prev) =>
+      (prev ?? []).map((task) => (task.id === editedTask.id ? editedTask : task))
+    );
+  }
+
   function handleColumnCreated(newColumn: ColumnType) {
     setColumns((prev) => [...(prev ?? []), newColumn]);
   }
@@ -260,6 +266,7 @@ function App() {
           tasks={tasks}
           columns={columns}
           onTaskDeleted={handleTaskDeleted}
+          onTaskEdited={handleTaskEdited}
           addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
         />
       ) : (

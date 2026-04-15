@@ -13,9 +13,16 @@ interface Column {
   tasks: TaskType[];
   color: string;
   onTaskDeleted: (taskId: string) => void;
+  onTaskEdited: (task: TaskType) => void;
 }
 
-export function Column({ name, tasks, color, onTaskDeleted }: Column) {
+export function Column({
+  name,
+  tasks,
+  color,
+  onTaskDeleted,
+  onTaskEdited,
+}: Column) {
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
 
   function handleOpenEditMenu(task: TaskType) {
@@ -60,9 +67,11 @@ export function Column({ name, tasks, color, onTaskDeleted }: Column) {
       </div>
       {selectedTask && (
         <EditTaskMenu
+          key={selectedTask.id}
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
           onDelete={onTaskDeleted}
+          onEdit={onTaskEdited}
         />
       )}
     </>
