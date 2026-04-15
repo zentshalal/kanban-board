@@ -18,6 +18,18 @@ export function TaskCard({ id, title, endDate, onClick }: Task) {
     return `${day} / ${month} / ${year}`;
   }
 
+  function isDateExpired(dateString: string) {
+    if (!dateString) return false;
+
+    const expirationDate: Date = new Date(dateString);
+    const now: Date = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    if (expirationDate < now) return true;
+
+    return false;
+  }
+
   return (
     <div
       onClick={onClick}
@@ -27,9 +39,11 @@ export function TaskCard({ id, title, endDate, onClick }: Task) {
       <span className="font-semibold text-lg dark:text-primary-text text-card-dark/60">
         {title}
       </span>
-      <span className="dark:text-secondary-text text-main-dark/40 text-sm font-semibold flex flex-row items-center gap-x-2">
+      <span
+        className={`text-sm flex flex-row items-center gap-x-2 ${isDateExpired(endDate) ? 'text-red-300 font-bold' : 'dark:text-secondary-text text-main-dark/40 font-semibold'}`}
+      >
         <FlagTriangleRight size={16} />
-        {formatDate(endDate)}
+        {formatDate(endDate)} {isDateExpired(endDate) ? '- (Expired)' : ''}
       </span>
     </div>
   );
