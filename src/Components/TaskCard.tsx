@@ -1,14 +1,20 @@
+// IMPORT ICONS
 import { FlagTriangleRight } from 'lucide-react';
+
+// IMPORT TYPE
+import type { MouseEventHandler } from 'react';
 
 interface Task {
   id: string;
   title: string;
   endDate: string | null;
+  onClick: MouseEventHandler;
 }
 
-export function TaskCard({ id, title, endDate }: Task) {
+export function TaskCard({ id, title, endDate, onClick }: Task) {
   return (
     <div
+      onClick={onClick}
       id={id}
       className="dark:bg-card-dark bg-main-white dark:shadow-xl dark:shadow- flex flex-col py-6 px-4 rounded-xl w-full gap-y-2 cursor-pointer hover:dark:bg-card-dark/60 hover:bg-main-dark/20 transition-colors"
     >
