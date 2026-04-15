@@ -113,12 +113,14 @@ export function NewBoard({
                   placeholder="e.g. Project Alpha"
                   value={boardName}
                   onChange={(e) => setBoardName(e.target.value)}
-                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                  className="font-semibold outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:text-primary-text text-card-dark/60 text-sm"
                 />
               </label>
               <div className="flex flex-col gap-y-4">
                 {errorMessage && (
-                  <p className="text-red-500 text-center">{errorMessage}</p>
+                  <p className="text-red-500 font-semibold text-center">
+                    {errorMessage}
+                  </p>
                 )}
                 <button
                   type="submit"

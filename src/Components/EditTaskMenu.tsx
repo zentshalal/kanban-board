@@ -146,7 +146,10 @@ export function EditTaskMenu({
                   <Trash size={16} />
                 </button>
                 <button
-                  onClick={() => setIsUpdating((prev: boolean) => !prev)}
+                  onClick={() => {
+                    setIsUpdating((prev) => !prev);
+                    setSeeing((prev) => !prev);
+                  }}
                   className="flex flex-row items-center gap-x-1 bg-action hover:bg-action/80 transition-colors p-2 rounded-lg cursor-pointer"
                 >
                   <Pencil size={16} />
@@ -162,12 +165,12 @@ export function EditTaskMenu({
               </div>
             </div>
             <div className="gap-y-6 flex flex-col w-full">
-              <p className="dark:text-primary-text text-card-dark/60">
+              <p className="dark:text-primary-text text-card-dark/60 font-semibold">
                 {task.description === ''
                   ? '"No description available"'
                   : task.description}
               </p>
-              <div className="flex flex-row gap-x-2 items-center dark:text-secondary-text text-card-dark/40">
+              <div className="flex flex-row gap-x-2 items-center dark:text-secondary-text text-card-dark/40 font-semibold">
                 <FlagTriangleRight size={16} />
                 <p className="font-semibold">{formatDate(task.expires_at)}</p>
               </div>
@@ -202,7 +205,7 @@ export function EditTaskMenu({
             </div>
             <div className="gap-y-4 flex flex-col w-full">
               <textarea
-                className="resize-none outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-1 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 dark:text-primary-text text-card-dark/60"
+                className="resize-none outline-none border-2 font-semibold dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-1 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 dark:text-primary-text text-card-dark/60"
                 placeholder="e.g. It's always good to take a break. This 15 minutes break will recharge the batteries a little."
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
@@ -225,7 +228,7 @@ export function EditTaskMenu({
                       }
                     }}
                     disabled={isNever}
-                    className={`outline-none border-2 rounded-lg px-2 py-1 dark:text-primary-text text-card-dark/60 ${isNever ? 'dark:border-secondary-text/20 border-action/20 opacity-50 cursor-not-allowed' : 'dark:border-secondary-text/40 border-action/40'}`}
+                    className={`outline-none border-2 font-semibold rounded-lg px-2 py-1 dark:text-primary-text text-card-dark/60 ${isNever ? 'dark:border-secondary-text/20 border-action/20 opacity-50 cursor-not-allowed' : 'dark:border-secondary-text/40 border-action/40'}`}
                   />
                 </div>
                 <label className="group flex items-center gap-x-2 cursor-pointer select-none">
@@ -284,7 +287,7 @@ export function EditTaskMenu({
               </label>
             </div>
             {errorMessage && (
-              <p className="text-red-500 text-md text-center mt-2">
+              <p className="text-red-500 font-semibold text-md text-center mt-2">
                 {errorMessage}
               </p>
             )}
@@ -298,13 +301,13 @@ export function EditTaskMenu({
             <div className="flex flex-row w-full gap-x-4 justify-between">
               <button
                 onClick={() => onClose()}
-                className="bg-green-500 w-full cursor-pointer hover:bg-green-400 transition-colors rounded-full font-bold"
+                className="bg-green-400 w-full cursor-pointer hover:bg-green-300 transition-colors rounded-full font-bold"
               >
                 No
               </button>
               <button
                 onClick={() => deleteTask(task)}
-                className="bg-red-500 py-2 w-full cursor-pointer hover:bg-red-400 transition-colors rounded-full font-bold"
+                className="bg-red-400 py-2 w-full cursor-pointer hover:bg-red-300 transition-colors rounded-full font-bold"
               >
                 Yes
               </button>

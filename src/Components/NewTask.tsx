@@ -147,7 +147,7 @@ export function NewTask({
                   placeholder="e.g. Take a coffee break"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 text-sm text-card-dark/60 dark:text-primary-text font-semibold"
                 />
               </label>
 
@@ -159,7 +159,7 @@ export function NewTask({
                   placeholder="e.g. It's always good to take a break. This 15 minutes break will recharge the batteries a little."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm resize-none"
+                  className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 text-sm resize-none text-card-dark/60 dark:text-primary-text font-semibold"
                   rows={5}
                 ></textarea>
               </label>
@@ -173,7 +173,7 @@ export function NewTask({
                     onChange={(e) => setColumn(e.target.value as string)}
                     name="column"
                     id="column"
-                    className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
+                    className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-card-dark/60"
                   >
                     {columns?.map((column) => {
                       return (
@@ -199,7 +199,7 @@ export function NewTask({
                 </span>
                 <div className="flex flex-row gap-x-2 items-center">
                   <div className="relative max-w-sm">
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none dark:text-primary-text text-card-dark/60">
                       <Calendar size={16} />
                     </div>
                     <input
@@ -213,7 +213,7 @@ export function NewTask({
                         }
                       }}
                       disabled={isNever}
-                      className={`outline-none border-2 rounded-lg px-2 py-2 dark:text-primary-text text-card-dark/60 ${isNever ? 'dark:border-secondary-text/20 border-action/20 opacity-50 cursor-not-allowed' : 'dark:border-secondary-text/40 border-action/40'}`}
+                      className={`outline-none border-2 rounded-lg px-2 py-2 dark:text-primary-text text-card-dark/60 font-semibold ${isNever ? 'dark:border-secondary-text/20 border-action/20 opacity-50 cursor-not-allowed' : 'dark:border-secondary-text/40 border-action/40'}`}
                     />
                   </div>
                   <label className="group flex items-center gap-x-2 cursor-pointer select-none">
@@ -245,7 +245,9 @@ export function NewTask({
 
               <div className="flex flex-col gap-y-4">
                 {errorMessage && (
-                  <p className="text-red-500 text-center">{errorMessage}</p>
+                  <p className="text-red-500 font-semibold text-center">
+                    {errorMessage}
+                  </p>
                 )}
                 <button
                   type="submit"

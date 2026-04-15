@@ -121,7 +121,7 @@ export function NewColumn({
                     placeholder="e.g. Todo"
                     value={columnName}
                     onChange={(e) => setColumnName(e.target.value)}
-                    className="outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 text-sm"
+                    className="dark:text-primary-text text-card-dark/60 outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-2 font-semibold text-sm"
                   />
                 </label>
                 <div className="flex flex-col gap-y-2 w-1/4">
@@ -138,7 +138,9 @@ export function NewColumn({
               </div>
               <div className="flex flex-col gap-y-4">
                 {errorMessage && (
-                  <p className="text-red-500 text-center">{errorMessage}</p>
+                  <p className="text-red-500 font-semibold text-center">
+                    {errorMessage}
+                  </p>
                 )}
                 <button
                   type="submit"
