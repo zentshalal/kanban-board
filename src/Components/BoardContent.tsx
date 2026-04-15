@@ -49,6 +49,7 @@ export function BoardContent({
                 color={column?.color}
                 onTaskDeleted={onTaskDeleted}
                 onTaskEdited={onTaskEdited}
+                columns={columns}
               />
             );
           })}

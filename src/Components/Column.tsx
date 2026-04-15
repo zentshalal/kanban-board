@@ -3,7 +3,7 @@ import { TaskCard } from './TaskCard';
 import { EditTaskMenu } from './EditTaskMenu';
 
 // IMPORT TYPE
-import type { TaskType } from '../types';
+import type { ColumnType, TaskType } from '../types';
 
 // IMPORT REACT
 import { useState } from 'react';
@@ -18,6 +18,7 @@ interface Column {
   color: string;
   onTaskDeleted: (taskId: string) => void;
   onTaskEdited: (task: TaskType) => void;
+  columns: ColumnType[];
 }
 
 export function Column({
@@ -27,6 +28,7 @@ export function Column({
   color,
   onTaskDeleted,
   onTaskEdited,
+  columns,
 }: Column) {
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
 
@@ -95,6 +97,7 @@ export function Column({
           onClose={() => setSelectedTask(null)}
           onDelete={onTaskDeleted}
           onEdit={onTaskEdited}
+          columns={columns}
         />
       )}
     </>

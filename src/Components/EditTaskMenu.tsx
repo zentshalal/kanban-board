@@ -1,5 +1,5 @@
 // IMPORT TYPE
-import type { TaskType } from '../types';
+import type { TaskType, ColumnType } from '../types';
 
 // IMPORT REACT
 import { useRef, useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import {
   Trash,
   Save,
   Calendar,
+  ChevronDown,
 } from 'lucide-react';
 
 // IMPORT SUPABASE
@@ -22,9 +23,16 @@ interface MenuProps {
   onClose: () => void;
   onDelete: (taskId: string) => void;
   onEdit: (task: TaskType) => void;
+  columns: ColumnType[];
 }
 
-export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
+export function EditTaskMenu({
+  task,
+  onClose,
+  onDelete,
+  onEdit,
+  columns,
+}: MenuProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
@@ -32,6 +40,7 @@ export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
   const [newDesc, setNewDesc] = useState<string>(task.description ?? '');
   const [newDate, setNewDate] = useState<string | null>(task.expires_at);
   const [isNever, setIsNever] = useState<boolean>(task.expires_at === null);
+  const [newStatus, setNewStatus] = useState<string>(columns[0].id);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   async function deleteTask(task: TaskType) {
@@ -55,6 +64,7 @@ export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
   }
 
   async function editTask(task: TaskType) {
+    console.log(newStatus);
     if (newTitle === '') {
       setErrorMessage(`Your task's name can't be empty`);
       return;
@@ -71,6 +81,7 @@ export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
         title: newTitle,
         description: newDesc,
         expires_at: isNever ? null : newDate,
+        column: newStatus,
       })
       .eq('id', task.id)
       .select();
@@ -179,9 +190,9 @@ export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
                 </button>
               </div>
             </div>
-            <div className="gap-y-1 flex flex-col w-full">
+            <div className="gap-y-4 flex flex-col w-full">
               <textarea
-                className="resize-none mb-6 outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-1 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 dark:text-primary-text text-card-dark/60"
+                className="resize-none outline-none border-2 dark:border-secondary-text/40 border-action/40 rounded-lg px-2 py-1 dark:placeholder:text-secondary-text/40 placeholder:text-action/40 dark:text-primary-text text-card-dark/60"
                 placeholder="e.g. It's always good to take a break. This 15 minutes break will recharge the batteries a little."
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
@@ -232,6 +243,34 @@ export function EditTaskMenu({ task, onClose, onDelete, onEdit }: MenuProps) {
                   </span>
                 </label>
               </div>
+              <label className="flex flex-col gap-y-2 w-full">
+                <span className="font-bold tracking-wider text-sm dark:text-primary-text text-card-dark/60">
+                  Change Status
+                </span>
+                <div className="w-full relative">
+                  <select
+                    onChange={(e) => setNewStatus(e.target.value as string)}
+                    name="column"
+                    id="column"
+                    className="outline-none border-2 appearance-none dark:border-secondary-text/40 border-action/40 rounded-md p-2 text-sm font-semibold dark:bg-card-dark bg-main-white w-full dark:text-primary-text text-action/40 "
+                  >
+                    {columns?.map((column) => {
+                      return (
+                        <option key={column.id} value={column.id}>
+                          {column.name.toUpperCase()}
+                        </option>
+                      );
+                    }) ?? <option>No Column</option>}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                    <ChevronDown
+                      size={16}
+                      strokeWidth={3}
+                      className="dark:text-action text-action/40"
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
             {errorMessage && (
               <p className="text-red-500 text-md text-center mt-2">
