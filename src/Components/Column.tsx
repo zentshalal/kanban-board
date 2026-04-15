@@ -10,11 +10,12 @@ import { useState } from 'react';
 
 interface Column {
   name: string;
-  tasks?: TaskType[] | [];
+  tasks: TaskType[];
   color: string;
+  onTaskDeleted: (taskId: string) => void;
 }
 
-export function Column({ name, tasks, color }: Column) {
+export function Column({ name, tasks, color, onTaskDeleted }: Column) {
   const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
 
   function handleOpenEditMenu(task: TaskType) {
@@ -34,7 +35,7 @@ export function Column({ name, tasks, color }: Column) {
             }}
           ></div>
           <span className="font-bold tracking-widest dark:text-secondary-text text-card-dark/60 text-xs">
-            {name} ({tasks ? tasks?.length : 0})
+            {name} ({tasks.length})
           </span>
         </div>
         <div className="flex flex-col gap-y-4 overflow-y-auto max-h-full pr-1 custom-scrollbar-y">
@@ -61,7 +62,7 @@ export function Column({ name, tasks, color }: Column) {
         <EditTaskMenu
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
-          onSave={() => null}
+          onDelete={onTaskDeleted}
         />
       )}
     </>

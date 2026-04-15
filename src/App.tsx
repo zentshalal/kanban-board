@@ -162,6 +162,10 @@ function App() {
     setTasks((prev) => [...(prev ?? []), newTask]);
   }
 
+  function handleTaskDeleted(taskId: string) {
+    setTasks((prev) => (prev ?? []).filter((task) => task.id !== taskId));
+  }
+
   function handleColumnCreated(newColumn: ColumnType) {
     setColumns((prev) => [...(prev ?? []), newColumn]);
   }
@@ -255,6 +259,7 @@ function App() {
           isMobile={isMobile}
           tasks={tasks}
           columns={columns}
+          onTaskDeleted={handleTaskDeleted}
           addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
         />
       ) : (

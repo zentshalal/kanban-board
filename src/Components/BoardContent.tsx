@@ -9,6 +9,7 @@ interface BoardContentProps {
   isMobile: boolean;
   tasks: TaskType[] | null | undefined;
   columns: ColumnType[] | null | undefined;
+  onTaskDeleted: (taskId: string) => void;
   addNewColumn: () => void;
 }
 
@@ -17,6 +18,7 @@ export function BoardContent({
   isMobile,
   tasks,
   columns,
+  onTaskDeleted,
   addNewColumn,
 }: BoardContentProps) {
   const hasColumns = (columns?.length ?? 0) > 0;
@@ -40,6 +42,7 @@ export function BoardContent({
                 name={column.name.toUpperCase()}
                 tasks={columnTasks}
                 color={column?.color}
+                onTaskDeleted={onTaskDeleted}
               />
             );
           })}

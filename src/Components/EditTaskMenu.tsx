@@ -5,16 +5,39 @@ import type { TaskType } from '../types';
 import { useRef, useEffect } from 'react';
 
 // IMPORT ICONS
-import { X, FlagTriangleRight, Pencil } from 'lucide-react';
+import { X, FlagTriangleRight, Pencil, Trash } from 'lucide-react';
+
+// IMPORT SUPABASE
+import { supabase } from '../supabase';
 
 interface MenuProps {
   task: TaskType;
   onClose: () => void;
-  onSave: () => void;
+  onDelete: (taskId: string) => void;
 }
 
-export function EditTaskMenu({ task, onClose, onSave }: MenuProps) {
+export function EditTaskMenu({ task, onClose, onDelete }: MenuProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  async function deleteTask(task: TaskType) {
+    const { data, error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', task.id)
+      .select();
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      onDelete(task.id);
+      onClose();
+    } else {
+      console.log('Aucune tâche trouvée avec cette ID');
+    }
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -44,9 +67,14 @@ export function EditTaskMenu({ task, onClose, onSave }: MenuProps) {
             {task.title}
           </h2>
           <div className="flex flex-row gap-x-2 items-center">
-            <button className="flex flex-row items-center gap-x-1 bg-action hover:bg-action/80 transition-colors py-1 px-2 rounded-lg cursor-pointer">
-              <p className="text-xs">Edit</p>
-              <Pencil size={12} />
+            <button
+              onClick={() => deleteTask(task)}
+              className="flex flex-row items-center gap-x-1 bg-red-500 hover:bg-red-500/60 transition-colors p-2 rounded-lg cursor-pointer"
+            >
+              <Trash size={16} />
+            </button>
+            <button className="flex flex-row items-center gap-x-1 bg-action hover:bg-action/80 transition-colors p-2 rounded-lg cursor-pointer">
+              <Pencil size={16} />
             </button>
             <button
               className="rounded-full dark:hover:bg-action hover:bg-action/40 p-1 cursor-pointer transition-colors dark:text-primary-text text-card-dark/60"
@@ -59,7 +87,7 @@ export function EditTaskMenu({ task, onClose, onSave }: MenuProps) {
           </div>
         </div>
         <div className="gap-y-6 flex flex-col w-full">
-          <p className="dark:text-primary-text text-card-dark/40">
+          <p className="dark:text-primary-text text-card-dark/60">
             {task.description === ''
               ? '"No description available"'
               : task.description}
