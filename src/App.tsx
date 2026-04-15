@@ -19,6 +19,10 @@ import { useState, useEffect } from 'react';
 import type { BoardType, TaskType, ColumnType } from './types';
 import type { PostgrestError } from '@supabase/supabase-js';
 
+// IMPORT DRAG AND DROP
+import { DragDropContext } from '@hello-pangea/dnd';
+import type { DropResult, DraggableLocation } from '@hello-pangea/dnd';
+
 // Generates a random user_id if there's none in localstorage
 function getUserId() {
   const key = 'user_id';
@@ -141,6 +145,60 @@ function useWindowSize() {
   return isMobile;
 }
 
+function sortByPosition(tasks: TaskType[]): TaskType[] {
+  return [...tasks].sort((a, b) => a.position - b.position);
+}
+
+function normalizePositions(tasks: TaskType[]): TaskType[] {
+  return tasks.map((task, index) => ({ ...task, position: index }));
+}
+
+function applyDragResult(
+  currentTasks: TaskType[],
+  source: DraggableLocation,
+  destination: DraggableLocation
+): { updatedTasks: TaskType[]; changedColumns: string[] } | null {
+  const sourceTasks = sortByPosition(
+    currentTasks.filter((task) => task.column === source.droppableId)
+  );
+  const destinationTasks =
+    source.droppableId === destination.droppableId
+      ? sourceTasks
+      : sortByPosition(
+          currentTasks.filter((task) => task.column === destination.droppableId)
+        );
+
+  const [movedTask] = sourceTasks.splice(source.index, 1);
+
+  if (!movedTask) {
+    return null;
+  }
+
+  const movedTaskWithColumn = { ...movedTask, column: destination.droppableId };
+  destinationTasks.splice(destination.index, 0, movedTaskWithColumn);
+
+  const updatedSourceTasks = normalizePositions(sourceTasks);
+  const updatedDestinationTasks =
+    source.droppableId === destination.droppableId
+      ? updatedSourceTasks
+      : normalizePositions(destinationTasks);
+
+  const updatedById = new Map<string, TaskType>();
+  updatedSourceTasks.forEach((task) => updatedById.set(task.id, task));
+  updatedDestinationTasks.forEach((task) => updatedById.set(task.id, task));
+
+  const updatedTasks = currentTasks.map(
+    (task) => updatedById.get(task.id) ?? task
+  );
+
+  const changedColumns =
+    source.droppableId === destination.droppableId
+      ? [source.droppableId]
+      : [source.droppableId, destination.droppableId];
+
+  return { updatedTasks, changedColumns };
+}
+
 function App() {
   const isMobile = useWindowSize();
 
@@ -168,12 +226,78 @@ function App() {
 
   function handleTaskEdited(editedTask: TaskType) {
     setTasks((prev) =>
-      (prev ?? []).map((task) => (task.id === editedTask.id ? editedTask : task))
+      (prev ?? []).map((task) =>
+        task.id === editedTask.id ? editedTask : task
+      )
     );
   }
 
   function handleColumnCreated(newColumn: ColumnType) {
     setColumns((prev) => [...(prev ?? []), newColumn]);
+  }
+
+  async function syncDraggedTasks(
+    allTasks: TaskType[],
+    changedColumns: string[]
+  ): Promise<void> {
+    const tasksToSync = allTasks.filter((task) =>
+      changedColumns.includes(task.column)
+    );
+
+    const updates = tasksToSync.map((task) =>
+      supabase
+        .from('tasks')
+        .update({ column: task.column, position: task.position })
+        .eq('id', task.id)
+    );
+
+    const results = await Promise.all(updates);
+    const hasError = results.some(({ error }) => Boolean(error));
+
+    if (hasError) {
+      console.log('Failed to sync drag and drop order');
+      results.forEach(({ error }) => {
+        if (error) {
+          console.log(error.message);
+        }
+      });
+    }
+  }
+
+  function onDragEnd(result: DropResult) {
+    const { source, destination } = result;
+
+    if (!destination) {
+      return;
+    }
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    let nextTasks: TaskType[] | null = null;
+    let changedColumns: string[] = [];
+
+    setTasks((prev) => {
+      if (!prev) {
+        return prev;
+      }
+
+      const dragResult = applyDragResult(prev, source, destination);
+
+      if (!dragResult) {
+        return prev;
+      }
+
+      nextTasks = dragResult.updatedTasks;
+      changedColumns = dragResult.changedColumns;
+      return dragResult.updatedTasks;
+    });
+
+    if (nextTasks && changedColumns.length > 0) {
+      void syncDraggedTasks(nextTasks, changedColumns);
+    }
   }
 
   useEffect(() => {
@@ -260,15 +384,17 @@ function App() {
         canCreateTask={hasColumns}
       />
       {hasBoards ? (
-        <BoardContent
-          isNavbarHidden={isNavbarHidden}
-          isMobile={isMobile}
-          tasks={tasks}
-          columns={columns}
-          onTaskDeleted={handleTaskDeleted}
-          onTaskEdited={handleTaskEdited}
-          addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
-        />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <BoardContent
+            isNavbarHidden={isNavbarHidden}
+            isMobile={isMobile}
+            tasks={tasks}
+            columns={columns}
+            onTaskDeleted={handleTaskDeleted}
+            onTaskEdited={handleTaskEdited}
+            addNewColumn={() => setIsNewColumnVisible((prev) => !prev)}
+          />
+        </DragDropContext>
       ) : (
         <section
           className={`${isNavbarHidden ? 'sm:col-span-5 md:col-span-6' : ''} ${isMobile && !isNavbarHidden ? 'col-span-1 -z-1 hidden' : ''} col-span-4 sm:col-span-3 md:col-span-4 row-span-9 w-full h-full flex items-center justify-center dark:bg-main-dark bg-white px-6`}

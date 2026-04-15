@@ -34,13 +34,16 @@ export function BoardContent({
           {/* TODO COLUMNS */}
           {columns?.map((column) => {
             const columnTasks =
-              tasks?.filter((task) => {
-                return task.column === column.id;
-              }) ?? [];
+              tasks
+                ?.filter((task) => {
+                  return task.column === column.id;
+                })
+                .sort((a, b) => a.position - b.position) ?? [];
 
             return (
               <Column
                 key={column.id}
+                id={column.id}
                 name={column.name.toUpperCase()}
                 tasks={columnTasks}
                 color={column?.color}
