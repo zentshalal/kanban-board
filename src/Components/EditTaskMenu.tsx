@@ -35,6 +35,8 @@ export function EditTaskMenu({
 }: MenuProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [confirm, setConfirm] = useState<boolean>(false);
+  const [seeing, setSeeing] = useState<boolean>(true);
 
   const [newTitle, setNewTitle] = useState<string>(task.title);
   const [newDesc, setNewDesc] = useState<string>(task.description ?? '');
@@ -127,7 +129,7 @@ export function EditTaskMenu({
         ref={containerRef}
         className="dark:bg-card-dark bg-main-white rounded-lg p-8 w-full max-w-md shadow-2xl"
       >
-        {!isUpdating && (
+        {seeing && (
           <>
             <div className="flex flex-row items-start justify-between">
               <h2 className="text-lg font-bold mb-6 dark:text-primary-text text-card-dark/60">
@@ -135,7 +137,10 @@ export function EditTaskMenu({
               </h2>
               <div className="flex flex-row gap-x-2 items-center">
                 <button
-                  onClick={() => deleteTask(task)}
+                  onClick={() => {
+                    setConfirm((prev) => !prev);
+                    setSeeing((prev) => !prev);
+                  }}
                   className="flex flex-row items-center gap-x-1 bg-red-500 hover:bg-red-500/60 transition-colors p-2 rounded-lg cursor-pointer"
                 >
                   <Trash size={16} />
@@ -284,6 +289,27 @@ export function EditTaskMenu({
               </p>
             )}
           </>
+        )}
+        {confirm && (
+          <div className="flex flex-col items-start justify-between">
+            <h2 className="text-lg font-bold mb-6 dark:text-primary-text text-card-dark/60">
+              Are you sure ?
+            </h2>
+            <div className="flex flex-row w-full gap-x-4 justify-between">
+              <button
+                onClick={() => onClose()}
+                className="bg-green-500 w-full cursor-pointer hover:bg-green-400 transition-colors rounded-full font-bold"
+              >
+                No
+              </button>
+              <button
+                onClick={() => deleteTask(task)}
+                className="bg-red-500 py-2 w-full cursor-pointer hover:bg-red-400 transition-colors rounded-full font-bold"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
