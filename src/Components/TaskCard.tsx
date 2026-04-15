@@ -12,6 +12,12 @@ interface Task {
 }
 
 export function TaskCard({ id, title, endDate, onClick }: Task) {
+  function formatDate(dateString: string) {
+    if (!dateString) return 'Never';
+    const [year, month, day] = dateString.split('-');
+    return `${day} / ${month} / ${year}`;
+  }
+
   return (
     <div
       onClick={onClick}
@@ -23,7 +29,7 @@ export function TaskCard({ id, title, endDate, onClick }: Task) {
       </span>
       <span className="dark:text-secondary-text text-main-dark/40 text-sm font-semibold flex flex-row items-center gap-x-2">
         <FlagTriangleRight size={16} />
-        {endDate ?? 'Never'}
+        {formatDate(endDate)}
       </span>
     </div>
   );

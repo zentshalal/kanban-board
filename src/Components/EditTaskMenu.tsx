@@ -40,8 +40,14 @@ export function EditTaskMenu({
   const [newDesc, setNewDesc] = useState<string>(task.description ?? '');
   const [newDate, setNewDate] = useState<string | null>(task.expires_at);
   const [isNever, setIsNever] = useState<boolean>(task.expires_at === null);
-  const [newStatus, setNewStatus] = useState<string>(columns[0].id);
+  const [newStatus, setNewStatus] = useState<string>(task.column);
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  function formatDate(dateString: string) {
+    if (!dateString) return 'Never';
+    const [year, month, day] = dateString.split('-');
+    return `${day} / ${month} / ${year}`;
+  }
 
   async function deleteTask(task: TaskType) {
     const { data, error } = await supabase
@@ -64,7 +70,6 @@ export function EditTaskMenu({
   }
 
   async function editTask(task: TaskType) {
-    console.log(newStatus);
     if (newTitle === '') {
       setErrorMessage(`Your task's name can't be empty`);
       return;
@@ -159,7 +164,7 @@ export function EditTaskMenu({
               </p>
               <div className="flex flex-row gap-x-2 items-center dark:text-secondary-text text-card-dark/40">
                 <FlagTriangleRight size={16} />
-                <p className="font-semibold">{task.expires_at ?? 'Never'}</p>
+                <p className="font-semibold">{formatDate(task.expires_at)}</p>
               </div>
             </div>
           </>
@@ -249,6 +254,7 @@ export function EditTaskMenu({
                 </span>
                 <div className="w-full relative">
                   <select
+                    value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value as string)}
                     name="column"
                     id="column"
