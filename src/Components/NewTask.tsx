@@ -177,7 +177,11 @@ export function NewTask({
                   >
                     {columns?.map((column) => {
                       return (
-                        <option key={column.id} value={column.id}>
+                        <option
+                          key={column.id}
+                          value={column.id}
+                          className="font-semibold"
+                        >
                           {column.name.toUpperCase()}
                         </option>
                       );
