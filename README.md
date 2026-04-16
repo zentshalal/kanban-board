@@ -2,7 +2,7 @@
 
 A robust, Trello-inspired project management tool built for performance and data security.
 
-## 🚀 Live Demo
+## 🚀 Live Demo
 
 Live Demo: <a href="https://kanban-board-psi-inky.vercel.app/" target="_blank">https://kanban-board-psi-inky.vercel.app/</a>
 
