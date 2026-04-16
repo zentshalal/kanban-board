@@ -1,4 +1,4 @@
-# 🌟 Kanban - React CRUD Organizer
+# 🌟 Kanban - React CRUD Organizer
 
 A robust, Trello-inspired project management tool built for performance and data security.
 
@@ -26,7 +26,7 @@ Live Demo: <a href="https://kanban-board-psi-inky.vercel.app/" target="_blank">h
 - **Backend / Database**: Supabase (PostgreSQL)
 - **Drag & Drop**: @hello-pangea/dnd
 
-## 🧠 What I learned
+## 🧠 What I learned
 
 - **First Dive In Typescript**: I used complex interface to structure data flow between the frontend and the database
 - **Database Security**: Configured SQL policies directly in Supabase to ensure user data privacy
@@ -42,7 +42,7 @@ The application relies on an optimized relational structure:
 - **Columns**: Belong to a specific Board
 - **Tasks**: Linked to a column and a user
 
-## The Struggles
+## 🎯 The Struggles
 
 - **Drag & Drop**: I had some difficulties setting up the DnD and used AI to help me implement it
 - **File Structuration**: I think that I could have done better organizing myself with folders/files (App.tsx has 500lines...)
