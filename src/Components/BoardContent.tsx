@@ -24,6 +24,9 @@ export function BoardContent({
   addNewColumn,
 }: BoardContentProps) {
   const hasColumns = (columns?.length ?? 0) > 0;
+  const orderedColumns = [...(columns ?? [])].sort(
+    (a, b) => (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER)
+  );
 
   return (
     <div
@@ -32,7 +35,7 @@ export function BoardContent({
       {hasColumns ? (
         <>
           {/* TODO COLUMNS */}
-          {columns?.map((column) => {
+          {orderedColumns.map((column) => {
             const columnTasks =
               tasks
                 ?.filter((task) => {
@@ -49,7 +52,7 @@ export function BoardContent({
                 color={column?.color}
                 onTaskDeleted={onTaskDeleted}
                 onTaskEdited={onTaskEdited}
-                columns={columns}
+                columns={orderedColumns}
               />
             );
           })}

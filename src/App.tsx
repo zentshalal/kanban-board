@@ -64,13 +64,17 @@ async function getColumns(
     .from('columns')
     .select()
     .eq('user_id', userId)
-    .eq('board', board);
+    .eq('board', board)
+    .order('position', { ascending: true });
 
   if (!error) {
-    return data as ColumnType[] | null;
+    return sortColumnsByPosition(data as ColumnType[]);
   }
 
-  if (error.message.includes('column columns.board does not exist')) {
+  if (
+    error.message.includes('column columns.board does not exist') ||
+    error.message.includes('position')
+  ) {
     const { data: fallbackData, error: fallbackError } = await supabase
       .from('columns')
       .select()
@@ -82,7 +86,7 @@ async function getColumns(
       return null;
     }
 
-    return fallbackData as ColumnType[] | null;
+    return sortColumnsByPosition(fallbackData as ColumnType[]);
   }
 
   console.log(error.message);
@@ -151,6 +155,15 @@ function sortByPosition(tasks: TaskType[]): TaskType[] {
 
 function normalizePositions(tasks: TaskType[]): TaskType[] {
   return tasks.map((task, index) => ({ ...task, position: index }));
+}
+
+function sortColumnsByPosition(columns: ColumnType[]): ColumnType[] {
+  return [...columns].sort((a, b) => {
+    const leftPosition = a.position ?? Number.MAX_SAFE_INTEGER;
+    const rightPosition = b.position ?? Number.MAX_SAFE_INTEGER;
+
+    return leftPosition - rightPosition;
+  });
 }
 
 function applyDragResult(
@@ -234,6 +247,58 @@ function App() {
 
   function handleColumnCreated(newColumn: ColumnType) {
     setColumns((prev) => [...(prev ?? []), newColumn]);
+  }
+
+  function handleColumnEdited(editedColumn: ColumnType) {
+    setColumns((prev) =>
+      sortColumnsByPosition(
+        (prev ?? []).map((column) =>
+          column.id === editedColumn.id ? editedColumn : column
+        )
+      )
+    );
+  }
+
+  function handleColumnDeleted(columnId: string) {
+    setColumns((prev) =>
+      (prev ?? []).filter((column) => column.id !== columnId)
+    );
+  }
+
+  async function syncColumnsOrder(
+    nextColumns: ColumnType[],
+    previousColumns: ColumnType[]
+  ): Promise<void> {
+    const updates = nextColumns.map((column, index) =>
+      supabase
+        .from('columns')
+        .update({ position: index })
+        .eq('id', column.id)
+    );
+
+    const results = await Promise.all(updates);
+    const hasError = results.some(({ error }) => Boolean(error));
+
+    if (hasError) {
+      console.log('Failed to sync column order');
+      results.forEach(({ error }) => {
+        if (error) {
+          console.log(error.message);
+        }
+      });
+      setColumns(previousColumns);
+    }
+  }
+
+  async function handleColumnsReordered(reorderedColumns: ColumnType[]) {
+    const previousColumns = sortColumnsByPosition(columns ?? []);
+    const normalizedColumns = reorderedColumns.map((column, index) => ({
+      ...column,
+      position: index,
+    }));
+
+    setColumns(normalizedColumns);
+    await syncColumnsOrder(normalizedColumns, previousColumns);
   }
 
   async function syncDraggedTasks(
@@ -382,6 +447,10 @@ function App() {
         }}
         isNavbarHidden={isNavbarHidden}
         canCreateTask={hasColumns}
+        columns={columns}
+        onColumnDeleted={handleColumnDeleted}
+        onColumnEdited={handleColumnEdited}
+        onColumnsReordered={handleColumnsReordered}
       />
       {hasBoards ? (
         <DragDropContext onDragEnd={onDragEnd}>
@@ -435,6 +504,7 @@ function App() {
         userId={userId}
         onColumnCreated={handleColumnCreated}
         actualBoard={selectedBoard}
+        nextPosition={columns?.length ?? 0}
       />
     </main>
   );

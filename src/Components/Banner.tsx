@@ -3,12 +3,21 @@ import { EllipsisVertical } from 'lucide-react';
 
 // IMPORT REACT
 import { useState, useEffect, useRef } from 'react';
+import { ManageMenu } from './ManageMenu';
+
+// IMPORT COMPONENTS
+import { ColumnMenu } from './ColumnMenu';
+import type { ColumnType } from '../types';
 
 interface BannerProps {
   addNewTask: () => void;
   isNavbarHidden: boolean;
   isMobile: boolean;
   canCreateTask: boolean;
+  columns: ColumnType[] | null | undefined;
+  onColumnDeleted: (columndId: string) => void;
+  onColumnEdited: (column: ColumnType) => void;
+  onColumnsReordered: (columns: ColumnType[]) => Promise<void>;
 }
 
 export function Banner({
@@ -16,14 +25,36 @@ export function Banner({
   isNavbarHidden,
   isMobile,
   canCreateTask,
+  columns,
+  onColumnDeleted,
+  onColumnEdited,
+  onColumnsReordered,
 }: BannerProps) {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const [isColumnMenuOpen, setIsColumnMenuOpen] = useState<boolean>(false);
+  const columnMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current?.contains(e.target as Node)) {
         setIsMenuOpen((prev) => !prev);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        columnMenuRef.current &&
+        !columnMenuRef.current?.contains(e.target as Node)
+      ) {
+        setIsColumnMenuOpen((prev) => !prev);
       }
     }
 
@@ -56,11 +87,24 @@ export function Banner({
       </div>
       {isMenuOpen && (
         <>
-          <div
+          <ManageMenu
             ref={menuRef}
-            className="origin-top-right absolute right-0 top-20 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 focus:outline-none"
-          ></div>
+            openColumnMenu={() => {
+              setIsColumnMenuOpen((prev) => !prev);
+              setIsMenuOpen((prev) => !prev);
+            }}
+          />
         </>
+      )}
+      {isColumnMenuOpen && (
+        <ColumnMenu
+          onDelete={onColumnDeleted}
+          onEdit={onColumnEdited}
+          onReorder={onColumnsReordered}
+          ref={columnMenuRef}
+          onClose={() => setIsColumnMenuOpen((prev) => !prev)}
+          columns={columns}
+        />
       )}
     </header>
   );

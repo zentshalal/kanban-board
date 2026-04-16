@@ -21,4 +21,5 @@ export interface ColumnType {
   name: string;
   color: string;
   board: string;
+  position?: number;
 }

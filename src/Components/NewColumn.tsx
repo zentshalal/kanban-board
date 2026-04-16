@@ -17,6 +17,7 @@ interface NewColumnProps {
   userId: string;
   onColumnCreated: (newColumn: ColumnType) => void;
   actualBoard: string;
+  nextPosition: number;
 }
 
 export function NewColumn({
@@ -25,6 +26,7 @@ export function NewColumn({
   userId,
   onColumnCreated,
   actualBoard,
+  nextPosition,
 }: NewColumnProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
@@ -59,6 +61,7 @@ export function NewColumn({
     name: columnName,
     color: columnColor,
     board: actualBoard,
+    position: nextPosition,
   };
 
   async function createColumn(e: React.FormEvent) {
