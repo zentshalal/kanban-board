@@ -297,30 +297,30 @@ export function EditTaskMenu({
                       />
                     </div>
                   </div>
-                  {errorMessage && (
-                    <p className="text-red-500 font-semibold text-md text-center mt-2">
-                      {errorMessage}
-                    </p>
-                  )}
-                  <div className="flex flex-row gap-x-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsUpdating((prev) => !prev);
-                        setSeeing((prev) => !prev);
-                      }}
-                      className="w-full border border-action/40 py-2 rounded-full cursor-pointer font-semibold hover:bg-action/10 transition-colors dark:text-primary-text text-card-dark/60"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Save changes
-                    </button>
-                  </div>
                 </label>
+                {errorMessage && (
+                  <p className="text-red-500 font-semibold text-md text-center mt-2">
+                    {errorMessage}
+                  </p>
+                )}
+                <div className="flex flex-row gap-x-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUpdating((prev) => !prev);
+                      setSeeing((prev) => !prev);
+                    }}
+                    className="w-full border border-action/40 py-2 rounded-full cursor-pointer font-semibold hover:bg-action/10 transition-colors dark:text-primary-text text-card-dark/60"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-full bg-action py-2 rounded-full cursor-pointer font-semibold hover:bg-action/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Save changes
+                  </button>
+                </div>
               </div>
             </form>
           </>
