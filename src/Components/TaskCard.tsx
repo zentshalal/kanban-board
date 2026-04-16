@@ -12,13 +12,13 @@ interface Task {
 }
 
 export function TaskCard({ id, title, endDate, onClick }: Task) {
-  function formatDate(dateString: string) {
+  function formatDate(dateString: string | null) {
     if (!dateString) return 'Never';
     const [year, month, day] = dateString.split('-');
     return `${day} / ${month} / ${year}`;
   }
 
-  function isDateExpired(dateString: string) {
+  function isDateExpired(dateString: string | null) {
     if (!dateString) return false;
 
     const expirationDate: Date = new Date(dateString);
