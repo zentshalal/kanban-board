@@ -7,7 +7,9 @@ import { ManageMenu } from './ManageMenu';
 
 // IMPORT COMPONENTS
 import { ColumnMenu } from './ColumnMenu';
-import type { ColumnType } from '../types';
+import { BoardMenu } from './BoardMenu';
+import type { BoardType, ColumnType } from '../types';
+import { supabase } from '../supabase';
 
 interface BannerProps {
   addNewTask: () => void;
@@ -15,9 +17,13 @@ interface BannerProps {
   isMobile: boolean;
   canCreateTask: boolean;
   columns: ColumnType[] | null | undefined;
+  boards: BoardType[] | null | undefined;
   onColumnDeleted: (columndId: string) => void;
   onColumnEdited: (column: ColumnType) => void;
   onColumnsReordered: (columns: ColumnType[]) => Promise<void>;
+  onBoardEdited: (board: BoardType) => void;
+  onBoardsReordered: (boards: BoardType[]) => Promise<void>;
+  onBoardDeleted: (boardId: string) => void;
 }
 
 export function Banner({
@@ -26,16 +32,26 @@ export function Banner({
   isMobile,
   canCreateTask,
   columns,
+  boards,
   onColumnDeleted,
   onColumnEdited,
   onColumnsReordered,
+  onBoardEdited,
+  onBoardsReordered,
+  onBoardDeleted,
 }: BannerProps) {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const [isColumnMenuOpen, setIsColumnMenuOpen] = useState<boolean>(false);
   const columnMenuRef = useRef<HTMLDivElement | null>(null);
+  const [isBoardMenuOpen, setIsBoardMenuOpen] = useState<boolean>(false);
+  const boardMenuRef = useRef<HTMLDivElement | null>(null);
 
+  /**
+   * Closes the manage menu when users click outside it so the menu behaves like
+   * a proper transient popover.
+   */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current?.contains(e.target as Node)) {
@@ -48,6 +64,29 @@ export function Banner({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  /**
+   * Closes the board management modal trigger when focus leaves its container,
+   * preventing stacked overlay states.
+   */
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        boardMenuRef.current &&
+        !boardMenuRef.current?.contains(e.target as Node)
+      ) {
+        setIsBoardMenuOpen((prev) => !prev);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  /**
+   * Closes the column management modal trigger on outside click to keep
+   * interactions predictable across overlapping menus.
+   */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
@@ -93,6 +132,14 @@ export function Banner({
               setIsColumnMenuOpen((prev) => !prev);
               setIsMenuOpen((prev) => !prev);
             }}
+            openBoardMenu={() => {
+              setIsBoardMenuOpen((prev) => !prev);
+              setIsMenuOpen((prev) => !prev);
+            }}
+            onLogout={() => {
+              void supabase.auth.signOut();
+              setIsMenuOpen(false);
+            }}
           />
         </>
       )}
@@ -104,6 +151,16 @@ export function Banner({
           ref={columnMenuRef}
           onClose={() => setIsColumnMenuOpen((prev) => !prev)}
           columns={columns}
+        />
+      )}
+      {isBoardMenuOpen && (
+        <BoardMenu
+          onEdit={onBoardEdited}
+          onReorder={onBoardsReordered}
+          onDelete={onBoardDeleted}
+          ref={boardMenuRef}
+          onClose={() => setIsBoardMenuOpen((prev) => !prev)}
+          boards={boards}
         />
       )}
     </header>

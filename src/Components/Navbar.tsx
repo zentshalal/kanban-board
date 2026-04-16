@@ -23,7 +23,18 @@ export function Navbar({
   onBoardChange,
   addNewBoard,
 }: NavbarProps) {
-  // Defines the user's theme reading localStorage or accessing his theme preferences
+  /**
+   * Keeps sidebar board order stable even when some rows do not yet have a
+   * persisted `position` value.
+   */
+  const orderedBoards = [...(boards ?? [])].sort(
+    (a, b) => (a.position ?? Number.MAX_SAFE_INTEGER) - (b.position ?? Number.MAX_SAFE_INTEGER)
+  );
+
+  /**
+   * Initializes theme from persisted preference, with system preference fallback
+   * so first-load UX matches user expectations.
+   */
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme');
 
@@ -37,7 +48,10 @@ export function Navbar({
     return prefersDark ? 'dark' : 'light';
   });
 
-  // Toggles the theme
+  /**
+   * Applies theme changes to both the root element and localStorage so the
+   * choice survives refreshes and future sessions.
+   */
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -68,7 +82,7 @@ export function Navbar({
             ALL BOARDS ({boards?.length ?? '0'})
           </span>
           <div className="flex flex-col py-6 pr-6 gap-y-2">
-            {boards?.map((board) => (
+            {orderedBoards.map((board) => (
               <button
                 key={board.id}
                 className={`flex flex-row gap-x-4 cursor-pointer transition-colors py-3 rounded-r-full px-6 ${selectedBoard === board.id ? 'bg-action hover:bg-action/80 text-primary-text' : 'hover:bg-action/20 dark:text-secondary-text text-card-dark/60'}`}

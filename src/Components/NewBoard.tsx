@@ -16,6 +16,7 @@ interface NewBoardProps {
   onClose: () => void;
   userId: string;
   onBoardCreated: (newBoard: BoardType) => void;
+  nextPosition: number;
 }
 
 export function NewBoard({
@@ -23,6 +24,7 @@ export function NewBoard({
   onClose,
   userId,
   onBoardCreated,
+  nextPosition,
 }: NewBoardProps) {
   const containerRef = useRef<HTMLFormElement>(null);
 
@@ -30,7 +32,10 @@ export function NewBoard({
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Handles click outside the menu to close it
+  /**
+   * Closes and resets the modal on outside click so partially entered values
+   * do not leak across separate board-creation attempts.
+   */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (
@@ -53,8 +58,13 @@ export function NewBoard({
   const boardToSend: BoardRequest = {
     user_id: userId,
     name: boardName,
+    position: nextPosition,
   };
 
+  /**
+   * Creates a board in Supabase and returns the inserted row to the parent so
+   * local UI state can update from the canonical server payload.
+   */
   async function createBoard(e: React.FormEvent) {
     e.preventDefault();
 

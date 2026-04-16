@@ -13,6 +13,7 @@ export interface BoardType {
   id: string;
   user_id: string;
   name: string;
+  position?: number;
 }
 
 export interface ColumnType {

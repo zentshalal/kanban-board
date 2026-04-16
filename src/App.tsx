@@ -23,21 +23,10 @@ import type { PostgrestError } from '@supabase/supabase-js';
 import { DragDropContext } from '@hello-pangea/dnd';
 import type { DropResult, DraggableLocation } from '@hello-pangea/dnd';
 
-// Generates a random user_id if there's none in localstorage
-function getUserId() {
-  const key = 'user_id';
-
-  let userId = localStorage.getItem(key);
-
-  if (!userId) {
-    userId = crypto.randomUUID();
-    localStorage.setItem(key, userId);
-  }
-
-  return userId;
-}
-
-// Gets the boards of the user
+/**
+ * Fetches boards ordered by `position` for deterministic rendering.
+ * Falls back to a simpler query when older schemas do not expose `position`.
+ */
 async function getBoards(userId: string): Promise<BoardType[] | null> {
   const {
     data,
@@ -45,17 +34,42 @@ async function getBoards(userId: string): Promise<BoardType[] | null> {
   }: { data: BoardType[] | null; error: PostgrestError | null } = await supabase
     .from('boards')
     .select()
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .order('position', { ascending: true });
+
+  if (!error) {
+    return sortBoardsByPosition(data ?? []);
+  }
+
+  if (error.message.includes('position')) {
+    const {
+      data: fallbackData,
+      error: fallbackError,
+    }: { data: BoardType[] | null; error: PostgrestError | null } = await supabase
+      .from('boards')
+      .select()
+      .eq('user_id', userId);
+
+    if (fallbackError) {
+      console.log(fallbackError.message);
+      return null;
+    }
+
+    return sortBoardsByPosition(fallbackData ?? []);
+  }
 
   if (error) {
     console.log(error.message);
     return null;
   }
 
-  return data;
+  return null;
 }
 
-// Gets the columns of the user
+/**
+ * Fetches board columns and tolerates schema drift (`board` vs `board_id`,
+ * missing `position`) so existing users can still load data.
+ */
 async function getColumns(
   board: string,
   userId: string
@@ -93,7 +107,10 @@ async function getColumns(
   return null;
 }
 
-// Gets the tasks of the user
+/**
+ * Fetches tasks for the active board with a legacy fallback (`board_id`) to
+ * keep migrated and non-migrated datasets compatible.
+ */
 async function getTasks(
   board: string,
   userId: string
@@ -134,7 +151,9 @@ async function getTasks(
   return null;
 }
 
-// Checks if the user is on mobile
+/**
+ * Tracks mobile viewport state so layout defaults align with small-screen UX.
+ */
 function useWindowSize() {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 640);
 
@@ -149,14 +168,17 @@ function useWindowSize() {
   return isMobile;
 }
 
+/** Sorts tasks by persisted position before rendering or reindexing. */
 function sortByPosition(tasks: TaskType[]): TaskType[] {
   return [...tasks].sort((a, b) => a.position - b.position);
 }
 
+/** Reassigns contiguous positions after drag/drop mutations. */
 function normalizePositions(tasks: TaskType[]): TaskType[] {
   return tasks.map((task, index) => ({ ...task, position: index }));
 }
 
+/** Sort helper that keeps columns with missing position at the end. */
 function sortColumnsByPosition(columns: ColumnType[]): ColumnType[] {
   return [...columns].sort((a, b) => {
     const leftPosition = a.position ?? Number.MAX_SAFE_INTEGER;
@@ -166,6 +188,20 @@ function sortColumnsByPosition(columns: ColumnType[]): ColumnType[] {
   });
 }
 
+/** Sort helper that keeps boards with missing position at the end. */
+function sortBoardsByPosition(boards: BoardType[]): BoardType[] {
+  return [...boards].sort((a, b) => {
+    const leftPosition = a.position ?? Number.MAX_SAFE_INTEGER;
+    const rightPosition = b.position ?? Number.MAX_SAFE_INTEGER;
+
+    return leftPosition - rightPosition;
+  });
+}
+
+/**
+ * Applies a drag result in-memory and returns both next tasks and the columns
+ * that changed, so persistence can be scoped to impacted records only.
+ */
 function applyDragResult(
   currentTasks: TaskType[],
   source: DraggableLocation,
@@ -212,10 +248,12 @@ function applyDragResult(
   return { updatedTasks, changedColumns };
 }
 
-function App() {
-  const isMobile = useWindowSize();
+interface AppProps {
+  userId: string;
+}
 
-  const userId = getUserId();
+function App({ userId }: AppProps) {
+  const isMobile = useWindowSize();
 
   const [boards, setBoards] = useState<BoardType[] | null | undefined>(null);
   const [selectedBoard, setSelectedBoard] = useState<string>('');
@@ -224,19 +262,49 @@ function App() {
 
   const [tasks, setTasks] = useState<TaskType[] | null | undefined>(null);
 
+  /** Inserts a new board locally and immediately selects it for follow-up actions. */
   function handleBoardCreated(newBoard: BoardType) {
-    setBoards((prev) => [...(prev ?? []), newBoard]);
+    setBoards((prev) => sortBoardsByPosition([...(prev ?? []), newBoard]));
     setSelectedBoard(newBoard.id);
   }
 
+  /** Replaces a single edited board while preserving sorted board order. */
+  function handleBoardEdited(editedBoard: BoardType) {
+    setBoards((prev) =>
+      sortBoardsByPosition(
+        (prev ?? []).map((board) =>
+          board.id === editedBoard.id ? editedBoard : board
+        )
+      )
+    );
+  }
+
+  /** Removes a board and clears dependent board-scoped state when needed. */
+  function handleBoardDeleted(boardId: string) {
+    setBoards((prev) => {
+      const nextBoards = (prev ?? []).filter((board) => board.id !== boardId);
+
+      if (selectedBoard === boardId) {
+        setSelectedBoard(nextBoards[0]?.id ?? '');
+      }
+
+      return nextBoards;
+    });
+    setColumns(null);
+    setTasks(null);
+  }
+
+  /** Appends newly created tasks to local board task state. */
   function handleTaskCreated(newTask: TaskType) {
     setTasks((prev) => [...(prev ?? []), newTask]);
   }
 
+  /** Removes a task from local state after successful deletion. */
   function handleTaskDeleted(taskId: string) {
     setTasks((prev) => (prev ?? []).filter((task) => task.id !== taskId));
   }
 
+  /** Applies a task edit in-place to keep UI synced with Supabase updates. */
   function handleTaskEdited(editedTask: TaskType) {
     setTasks((prev) =>
       (prev ?? []).map((task) =>
@@ -245,10 +313,12 @@ function App() {
     );
   }
 
+  /** Appends newly created columns to local state. */
   function handleColumnCreated(newColumn: ColumnType) {
     setColumns((prev) => [...(prev ?? []), newColumn]);
   }
 
+  /** Replaces one column and re-sorts to maintain visual ordering. */
   function handleColumnEdited(editedColumn: ColumnType) {
     setColumns((prev) =>
       sortColumnsByPosition(
@@ -259,12 +329,17 @@ function App() {
     );
   }
 
+  /** Removes a deleted column from the current board state. */
   function handleColumnDeleted(columnId: string) {
     setColumns((prev) =>
       (prev ?? []).filter((column) => column.id !== columnId)
     );
   }
 
+  /**
+   * Persists full column order after local optimistic update.
+   * Rolls back to previous state if any mutation fails.
+   */
   async function syncColumnsOrder(
     nextColumns: ColumnType[],
     previousColumns: ColumnType[]
@@ -290,6 +365,7 @@ function App() {
     }
   }
 
+  /** Normalizes reordered columns then delegates persistence with rollback safety. */
   async function handleColumnsReordered(reorderedColumns: ColumnType[]) {
     const previousColumns = sortColumnsByPosition(columns ?? []);
     const normalizedColumns = reorderedColumns.map((column, index) => ({
@@ -301,6 +377,51 @@ function App() {
     await syncColumnsOrder(normalizedColumns, previousColumns);
   }
 
+  /**
+   * Persists full board order after local optimistic update.
+   * Rolls back to previous state if any mutation fails.
+   */
+  async function syncBoardsOrder(
+    nextBoards: BoardType[],
+    previousBoards: BoardType[]
+  ): Promise<void> {
+    const updates = nextBoards.map((board, index) =>
+      supabase
+        .from('boards')
+        .update({ position: index })
+        .eq('id', board.id)
+    );
+
+    const results = await Promise.all(updates);
+    const hasError = results.some(({ error }) => Boolean(error));
+
+    if (hasError) {
+      console.log('Failed to sync board order');
+      results.forEach(({ error }) => {
+        if (error) {
+          console.log(error.message);
+        }
+      });
+      setBoards(previousBoards);
+    }
+  }
+
+  /** Normalizes reordered boards then delegates persistence with rollback safety. */
+  async function handleBoardsReordered(reorderedBoards: BoardType[]) {
+    const previousBoards = sortBoardsByPosition(boards ?? []);
+    const normalizedBoards = reorderedBoards.map((board, index) => ({
+      ...board,
+      position: index,
+    }));
+
+    setBoards(normalizedBoards);
+    await syncBoardsOrder(normalizedBoards, previousBoards);
+  }
+
+  /**
+   * Persists only tasks from columns affected by drag/drop to reduce writes
+   * while keeping moved task positions canonical in Supabase.
+   */
   async function syncDraggedTasks(
     allTasks: TaskType[],
     changedColumns: string[]
@@ -329,6 +450,10 @@ function App() {
     }
   }
 
+  /**
+   * Handles DnD completion with optimistic state update, then asynchronously
+   * syncs affected tasks to Supabase.
+   */
   function onDragEnd(result: DropResult) {
     const { source, destination } = result;
 
@@ -365,6 +490,9 @@ function App() {
     }
   }
 
+  /**
+   * Initial board bootstrap for the authenticated user.
+   */
   useEffect(() => {
     getBoards(userId).then((data: BoardType[] | null) => {
       setBoards(data);
@@ -375,6 +503,9 @@ function App() {
     });
   }, [userId]);
 
+  /**
+   * Loads board-scoped resources whenever active board changes.
+   */
   useEffect(() => {
     if (!selectedBoard) {
       return;
@@ -448,9 +579,13 @@ function App() {
         isNavbarHidden={isNavbarHidden}
         canCreateTask={hasColumns}
         columns={columns}
+        boards={boards}
         onColumnDeleted={handleColumnDeleted}
         onColumnEdited={handleColumnEdited}
         onColumnsReordered={handleColumnsReordered}
+        onBoardEdited={handleBoardEdited}
+        onBoardsReordered={handleBoardsReordered}
+        onBoardDeleted={handleBoardDeleted}
       />
       {hasBoards ? (
         <DragDropContext onDragEnd={onDragEnd}>
@@ -497,6 +632,7 @@ function App() {
         onClose={() => setIsNewBoardVisible(false)}
         userId={userId}
         onBoardCreated={handleBoardCreated}
+        nextPosition={boards?.length ?? 0}
       />
       <NewColumn
         isVisible={isNewColumnVisible}

@@ -1,9 +1,20 @@
 interface MenuProps {
   ref: React.RefObject<HTMLDivElement | null>;
   openColumnMenu: () => void;
+  openBoardMenu: () => void;
+  onLogout: () => void;
 }
 
-export function ManageMenu({ ref, openColumnMenu }: MenuProps) {
+export function ManageMenu({
+  ref,
+  openColumnMenu,
+  openBoardMenu,
+  onLogout,
+}: MenuProps) {
+  /**
+   * Pure action menu for board-level management shortcuts. Behavior is delegated
+   * to parent handlers to keep this component presentation-focused.
+   */
   return (
     <>
       <div
@@ -16,10 +27,16 @@ export function ManageMenu({ ref, openColumnMenu }: MenuProps) {
         >
           Manage Columns
         </button>
-        <button className="text-primary-text p-1 bg-action hover:bg-action/60 cursor-pointer transition-colors w-full rounded-lg font-semibold">
+        <button
+          onClick={openBoardMenu}
+          className="text-primary-text p-1 bg-action hover:bg-action/60 cursor-pointer transition-colors w-full rounded-lg font-semibold"
+        >
           Manage Boards
         </button>
-        <button className="text-primary-text p-1 bg-red-400 hover:bg-red-400/60 cursor-pointer transition-colors w-full rounded-lg font-semibold">
+        <button
+          onClick={onLogout}
+          className="text-primary-text p-1 bg-red-400 hover:bg-red-400/60 cursor-pointer transition-colors w-full rounded-lg font-semibold"
+        >
           Log Out
         </button>
       </div>
