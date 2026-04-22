@@ -67,8 +67,8 @@ npm install
 Create a .env file with your Supabase credentials:
 
 ```bash
-    VITE_SUPABASE_URL=your_url
-    VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
 **Start the development server**:

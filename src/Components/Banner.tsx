@@ -24,6 +24,7 @@ interface BannerProps {
   onBoardEdited: (board: BoardType) => void;
   onBoardsReordered: (boards: BoardType[]) => Promise<void>;
   onBoardDeleted: (boardId: string) => void;
+  selectedBoardId: string;
 }
 
 export function Banner({
@@ -39,6 +40,7 @@ export function Banner({
   onBoardEdited,
   onBoardsReordered,
   onBoardDeleted,
+  selectedBoardId,
 }: BannerProps) {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -102,12 +104,16 @@ export function Banner({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const selectedBoardName = boards?.filter(
+    (board) => board.id === selectedBoardId
+  )[0].name;
+
   return (
     <header
       className={`${isNavbarHidden ? 'sm:col-span-5 md:col-span-6' : ''} ${isMobile && !isNavbarHidden ? 'row-start-1 z-1' : ''}relative col-span-4 sm:col-span-3 md:col-span-4 flex flex-row items-center justify-between dark:bg-card-dark bg-main-white w-full px-6 py-6 row-span-1 flex-wrap border-b border-secondary-text/20`}
     >
       <div className="text-2xl font-semibold dark:text-primary-text text-action">
-        Platform Launch
+        {selectedBoardName}
       </div>
       <div className="flex flex-row gap-x-2 items-center">
         <button

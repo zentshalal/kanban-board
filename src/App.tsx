@@ -45,10 +45,8 @@ async function getBoards(userId: string): Promise<BoardType[] | null> {
     const {
       data: fallbackData,
       error: fallbackError,
-    }: { data: BoardType[] | null; error: PostgrestError | null } = await supabase
-      .from('boards')
-      .select()
-      .eq('user_id', userId);
+    }: { data: BoardType[] | null; error: PostgrestError | null } =
+      await supabase.from('boards').select().eq('user_id', userId);
 
     if (fallbackError) {
       console.log(fallbackError.message);
@@ -345,10 +343,7 @@ function App({ userId }: AppProps) {
     previousColumns: ColumnType[]
   ): Promise<void> {
     const updates = nextColumns.map((column, index) =>
-      supabase
-        .from('columns')
-        .update({ position: index })
-        .eq('id', column.id)
+      supabase.from('columns').update({ position: index }).eq('id', column.id)
     );
 
     const results = await Promise.all(updates);
@@ -386,10 +381,7 @@ function App({ userId }: AppProps) {
     previousBoards: BoardType[]
   ): Promise<void> {
     const updates = nextBoards.map((board, index) =>
-      supabase
-        .from('boards')
-        .update({ position: index })
-        .eq('id', board.id)
+      supabase.from('boards').update({ position: index }).eq('id', board.id)
     );
 
     const results = await Promise.all(updates);
@@ -586,6 +578,7 @@ function App({ userId }: AppProps) {
         onBoardEdited={handleBoardEdited}
         onBoardsReordered={handleBoardsReordered}
         onBoardDeleted={handleBoardDeleted}
+        selectedBoardId={selectedBoard}
       />
       {hasBoards ? (
         <DragDropContext onDragEnd={onDragEnd}>
